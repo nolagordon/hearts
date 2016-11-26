@@ -1,4 +1,4 @@
-package hearts;
+//package hearts;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -40,7 +40,8 @@ public class Game {
 		for (int player = 0; player < 4; player++) {
 			hands.add(new ArrayList<Card>());
 			for (int i = 0; i < 13; i++) {
-				hands.get(player).add(deck.get(rand.nextInt(deck.size())));
+			    int cardIndex = rand.nextInt(deck.size());
+				hands.get(player).add(deck.remove(cardIndex));
 			}
 		}
 		
@@ -48,6 +49,18 @@ public class Game {
 	
 	public static void main(String[] args) {
 		Game game = new Game();
+		
+		// while the game is not over, let the user make a move, then let AI move
+		System.out.println("This is your deck: ");
+		game.printHand(0);
+		
 	}
+
+    public void printHand(int playerNum) {
+	// todo: change the 13 to something less concrete
+	for(int i = 0; i < hands.get(playerNum).size(); i++) {
+	    System.out.println(hands.get(playerNum).get(i));
+	}
+    }
 	
 }
