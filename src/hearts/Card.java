@@ -3,17 +3,17 @@
 import java.util.HashMap;
 
 public class Card {
-	public final int HEARTS = 0;
-	public final int DIAMONDS = 1;
-	public final int SPADES = 2;
-	public final int CLUBS = 3;
+	public static final int HEARTS = 0;
+	public static final int DIAMONDS = 1;
+	public static final int SPADES = 2;
+	public static final int CLUBS = 3;
 	
 	int suit;
 	int val;
 
-    HashMap<Integer,String> suitString = new HashMap<Integer,String>();
+    public HashMap<Integer,String> suitString = new HashMap<Integer,String>();
 
-    HashMap<Integer,String> valString = new HashMap<Integer,String>();
+    public HashMap<Integer,String> valString = new HashMap<Integer,String>();
 	
 	public Card(int suit, int val) {
 		this.suit = suit;
