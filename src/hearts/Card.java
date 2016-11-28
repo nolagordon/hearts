@@ -24,7 +24,6 @@ public class Card {
 		suitString.put(2, "spades");
 		suitString.put(3, "clubs");
 		
-		valString.put(1,"ace");
 		valString.put(2,"two");
 		valString.put(3,"three");
 		valString.put(4,"four");
@@ -37,6 +36,7 @@ public class Card {
 		valString.put(11,"jack");
 		valString.put(12,"queen");
 		valString.put(13,"king");
+		valString.put(14,"ace");
 		
 
 	}

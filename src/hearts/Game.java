@@ -7,6 +7,7 @@ public class Game {
 	
 	int players;
 	ArrayList<ArrayList<Card>> hands;
+    int twoOfClubs;
 	
 	/*
 	public Game(int players) {
@@ -31,7 +32,7 @@ public class Game {
 		Random rand = new Random();
 		ArrayList<Card> deck = new ArrayList<Card>();
 		for (int s = 0; s < 4; s++) {
-			for (int v = 1; v <= 13; v++) {
+			for (int v = 2; v <= 14; v++) {
 				deck.add(new Card(s,v));
 			}
 		}
@@ -41,7 +42,14 @@ public class Game {
 			hands.add(new ArrayList<Card>());
 			for (int i = 0; i < 13; i++) {
 			    int cardIndex = rand.nextInt(deck.size());
-				hands.get(player).add(deck.remove(cardIndex));
+			    Card cardToAdd = deck.remove(cardIndex);
+			    
+			    // if a player gets the 2 of clubs, take note
+			    // they will start the first trick of the game
+			    if ((cardToAdd.getSuit() == Card.CLUBS) && (cardToAdd.getVal() == 2)) {
+				twoOfClubs = player;
+			    }
+			    hands.get(player).add(cardToAdd);
 			}
 		}
 		
@@ -69,15 +77,42 @@ public class Game {
 		// play 5 tricks
 		// stores whether or not a heart has been played
 		boolean heartsPlayed = false;
+		boolean firstTrick = true;
+		int leader = game.twoOfClubs;
 		for (int i = 0; i < 13; i++) {
 		    System.out.println("Trick " + (i+1) + ":");
 		    ArrayList<Card> trick = new ArrayList<Card>();
+
+		    // let each player take their turn during the trick
 		    for (int j = 0; j < game.players; j++) {
-			Card next = game.playCard(j, trick, heartsPlayed);
+			// calculate which player goes next in the trick
+			int playerNum = (leader + j) % game.players;
+			Card next = game.playCard(playerNum, trick, heartsPlayed, firstTrick);
+
+			// if the suit of the card played is hearts, then hearts have been played
 			if (next.getSuit() == Card.HEARTS) { heartsPlayed = true; }
-			System.out.println("Player " + (j+1) + " played the " + next);
+			firstTrick = false;
+			System.out.println("Player " + playerNum + " played the " + next);
 			trick.add(next);
 		    }
+
+		    // figure out the highest card of the leading suit in the trick
+		    // to determine who won the trick
+		    int leadingSuit = trick.get(0).getSuit();
+		    int winner = leader;
+		    Card winningCard = trick.get(0);
+		    for (int j = 1; j < game.players; j++) {
+			Card card = trick.get(j);
+
+			// the player with the highest value card in the leading suit wins the trick
+			if (card.getSuit() == leadingSuit && card.getVal() > winningCard.getVal()) {
+			    winner = (j + leader) % game.players;
+			    winningCard = card;
+			}
+		    }
+
+		    System.out.println("Player " + winner + " won this trick");
+		    leader = winner;
 
 		}
 
@@ -91,8 +126,18 @@ public class Game {
 	}
     }
 
-    public Card playCard(int playerNum, ArrayList<Card> trick, boolean heartsPlayed) {
+    public Card playCard(int playerNum, ArrayList<Card> trick, boolean heartsPlayed, boolean firstTrick) {
 	ArrayList<Card> hand = hands.get(playerNum);
+	if (firstTrick) {
+	    // play the two of clubs
+	    for (int i = 0; i < hand.size(); i++) {
+		Card c = hand.get(i);
+		if (c.getSuit() == Card.CLUBS && c.getVal() == 2) {
+		    return c;
+		}
+	    }
+	}
+
 	ArrayList<Card> validCards = hand;
 
 	ArrayList<Card> leadingSuitCards = new ArrayList<Card>();
