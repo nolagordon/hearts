@@ -2,6 +2,7 @@
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Scanner;
 
 public class Game {
 	
@@ -57,16 +58,11 @@ public class Game {
 	
 	public static void main(String[] args) {
 		Game game = new Game();
-
-		/*
 		Scanner scanner = new Scanner(System.in);
-		
-		// while the game is not over, let the user make a move, then let AI move
-		System.out.println("This is your hand: ");
-		game.printHand(0);
+		// choose a player number to represent he user
+		int userNum = 0;
 
-		System.out.print("Pick a card to play: ");
-		Card played = hands.get(0).get(scanner.nextInt());*/
+		game.sortHands();
 
 		// computer players
 		// print out initial hands
@@ -85,15 +81,35 @@ public class Game {
 
 		    // let each player take their turn during the trick
 		    for (int j = 0; j < game.players; j++) {
+		   
 			// calculate which player goes next in the trick
 			int playerNum = (leader + j) % game.players;
-			Card next = game.playCard(playerNum, trick, heartsPlayed, firstTrick);
+			Card playedCard = null;
 
+			if (playerNum == userNum) {
+			    // if it is the user's turn, show them their hand and let them pick a card
+			    System.out.println("This is your hand: ");
+			    game.printHand(userNum);
+
+			    System.out.print("Pick a card to play: ");
+			    playedCard = game.hands.get(userNum).get(scanner.nextInt());
+			    System.out.println("You played the " + playedCard);
+			    game.hands.get(userNum).remove(playedCard);
+			   
+			} else {
+			    // otherwise the computer is taking a move
+			    // so run the method that lets them choose a card
+			    playedCard = game.playCard(playerNum, trick, heartsPlayed, firstTrick);
+			    System.out.println("Player " + playerNum + " played the " + playedCard);
+
+			}
+
+			//TODO: is there a better place to put this?
 			// if the suit of the card played is hearts, then hearts have been played
-			if (next.getSuit() == Card.HEARTS) { heartsPlayed = true; }
+			if (playedCard.getSuit() == Card.HEARTS) { heartsPlayed = true; }
 			firstTrick = false;
-			System.out.println("Player " + playerNum + " played the " + next);
-			trick.add(next);
+			trick.add(playedCard);
+
 		    }
 
 		    // figure out the highest card of the leading suit in the trick
@@ -111,7 +127,8 @@ public class Game {
 			}
 		    }
 
-		    System.out.println("Player " + winner + " won this trick");
+		    if (winner == userNum) { System.out.println("You won this trick"); }
+		    else {System.out.println("Player " + winner + " won this trick"); }
 		    leader = winner;
 
 		}
@@ -173,6 +190,44 @@ public class Game {
 	}
 	hand.remove(card);
 	return card;
+    }
+
+    // sorts each player's hand for readability
+    public void sortHands() {
+	for (int i = 0; i < hands.size(); i++) {
+	    ArrayList<Card> hand = hands.get(i);
+	    ArrayList<Card> hearts = new ArrayList<Card>();
+	    ArrayList<Card> diamonds = new ArrayList<Card>();
+	    ArrayList<Card> clubs = new ArrayList<Card>();
+	    ArrayList<Card> spades = new ArrayList<Card>();
+
+	    for (int j = 0; j < hand.size(); j++) {
+		Card curCard = hand.get(j);
+		if (curCard.getSuit() == Card.HEARTS) { hearts.add(curCard); }
+		else if (curCard.getSuit() == Card.DIAMONDS) { diamonds.add(curCard); }
+		else if (curCard.getSuit() == Card.CLUBS) { clubs.add(curCard); }
+		else { spades.add(curCard); }
+	    }
+
+	    for (int j = 0; j < hearts.size(); j++) {
+		hand.set(j, hearts.get(j));
+	    }
+
+	    for (int j = 0; j < diamonds.size(); j++) {
+		hand.set(j + hearts.size(), diamonds.get(j));
+	    }
+
+	    for (int j = 0; j < clubs.size(); j++) {
+		hand.set(j + hearts.size() + diamonds.size(), clubs.get(j));
+	    }
+
+	    for (int j = 0; j < spades.size(); j++) {
+		hand.set(j + hearts.size() + diamonds.size() + clubs.size(), spades.get(j));
+	    }
+
+		   
+
+	}
     }
 	
 }
