@@ -5,6 +5,14 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class Game {
+
+    // represents AI choosing random cards
+    public final static int RANDOM = 0;
+    // AI always aims to lose the trick
+    public final static int TRICK = 1;
+
+    int[] strategies;
+    
 	
 	int players;
 	ArrayList<ArrayList<Card>> hands;
@@ -24,6 +32,7 @@ public class Game {
 	
 	public Game() {
 		this.players = 4;
+		strategies = new int[4];
 		deal();
 	}
 	
@@ -60,7 +69,12 @@ public class Game {
 		Game game = new Game();
 		Scanner scanner = new Scanner(System.in);
 		// choose a player number to represent he user
-		int userNum = 0;
+		// TEMPORARILY REMOVE USER INPUT int userNum = 0;
+		int userNum = 17;
+		game.strategies[0] = TRICK;
+		game.strategies[1] = TRICK;
+		game.strategies[2] = TRICK;
+		game.strategies[3] = TRICK;
 
 		game.sortHands();
 
@@ -99,7 +113,7 @@ public class Game {
 			} else {
 			    // otherwise the computer is taking a move
 			    // so run the method that lets them choose a card
-			    playedCard = game.playCard(playerNum, trick, heartsPlayed, firstTrick);
+			    playedCard = game.playCard(playerNum, trick, heartsPlayed, firstTrick, game.strategies[playerNum]);
 			    System.out.println("Player " + playerNum + " played the " + playedCard);
 
 			}
@@ -143,7 +157,7 @@ public class Game {
 	}
     }
 
-    public Card playCard(int playerNum, ArrayList<Card> trick, boolean heartsPlayed, boolean firstTrick) {
+    public Card playCard(int playerNum, ArrayList<Card> trick, boolean heartsPlayed, boolean firstTrick, int strategy) {
 	ArrayList<Card> hand = hands.get(playerNum);
 	if (firstTrick) {
 	    // play the two of clubs
@@ -178,15 +192,38 @@ public class Game {
 			validCards.add(hand.get(i));
 		    }
 		}
+		
+		// if there are no valid cards, that means the user only has hearts left
+		// so we set valid cards back to the entire hand
+		if (validCards.size() == 0) { validCards = hand; }
 	    }
 	}
 
+	// We've compiled a list of valid to choose from
 	Random r = new Random();
 	Card card;
+	// case when the hand has cards of the leading suit
 	if (leadingSuitCards.size() > 0) {
-	    card = leadingSuitCards.get(r.nextInt(leadingSuitCards.size()));
+	    if (strategy == this.RANDOM) {
+		card = leadingSuitCards.get(r.nextInt(leadingSuitCards.size()));
+	    } else { // if strategy == TRICK
+		// find the lowest value card
+		card = leadingSuitCards.get(0);
+		for (int i = 1; i < leadingSuitCards.size(); i++) {
+		    Card other = leadingSuitCards.get(i);
+		    if (other.getVal() < card.getVal()) { card = other; }
+		}
+	    }
 	} else {
-	    card = validCards.get(r.nextInt(validCards.size()));
+	    if (strategy == this.RANDOM) {
+		card = validCards.get(r.nextInt(validCards.size()));
+	    } else { // if strategy == TRICK
+		card = validCards.get(0);
+		for (int i = 1; i < validCards.size(); i++) {
+		    Card other = validCards.get(i);
+		    if (other.getVal() > card.getVal()) { card = other; }
+		}
+	    }
 	}
 	hand.remove(card);
 	return card;
