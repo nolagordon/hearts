@@ -1,5 +1,6 @@
 package hearts;
 
+import java.util.Comparator;
 import java.util.HashMap;
 
 public class Card {
@@ -51,4 +52,28 @@ public class Card {
 	return valString.get(val) + " of " + suitString.get(suit);
     }
 	
+    public static Comparator<Card> cardComparator() {
+    	 Comparator<Card> comp = new Comparator<Card>(){
+    	     @Override
+    	     public int compare(Card c1, Card c2)
+    	     {
+    	         if (c1.getSuit() == c2.getSuit()) {
+    	        	 if (c1.getVal() < c2.getVal()) {
+    	        		 return -1;
+    	        	 } else if (c1.getVal() > c2.getVal()) {
+    	        		 return 1;
+    	        	 } else {
+    	        		 return 0;
+    	        	 }
+    	         } else if (c1.getSuit() < c2.getSuit()) {
+    	        	 return -1;
+    	         } else {
+    	        	 return 1;
+    	         }
+    	     }        
+    	 };
+    	 return comp;
+    }
 }
+
+

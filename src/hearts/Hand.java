@@ -1,6 +1,7 @@
 package hearts;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Hand {
 	private ArrayList<Card> cards;
@@ -10,34 +11,7 @@ public class Hand {
 	}
 	
 	public void sort() {
-		    ArrayList<Card> hearts = new ArrayList<Card>();
-		    ArrayList<Card> diamonds = new ArrayList<Card>();
-		    ArrayList<Card> clubs = new ArrayList<Card>();
-		    ArrayList<Card> spades = new ArrayList<Card>();
-
-		    for (int j = 0; j < cards.size(); j++) {
-			Card curCard = cards.get(j);
-			if (curCard.getSuit() == Card.HEARTS) { hearts.add(curCard); }
-			else if (curCard.getSuit() == Card.DIAMONDS) { diamonds.add(curCard); }
-			else if (curCard.getSuit() == Card.CLUBS) { clubs.add(curCard); }
-			else { spades.add(curCard); }
-		    }
-
-		    for (int j = 0; j < hearts.size(); j++) {
-			cards.set(j, hearts.get(j));
-		    }
-
-		    for (int j = 0; j < diamonds.size(); j++) {
-			cards.set(j + hearts.size(), diamonds.get(j));
-		    }
-
-		    for (int j = 0; j < clubs.size(); j++) {
-			cards.set(j + hearts.size() + diamonds.size(), clubs.get(j));
-		    }
-
-		    for (int j = 0; j < spades.size(); j++) {
-			cards.set(j + hearts.size() + diamonds.size() + clubs.size(), spades.get(j));
-		    }
+		Collections.sort(cards, Card.cardComparator());
 	}
 	
 	public void print() {
