@@ -1,4 +1,4 @@
-//package hearts;
+package hearts;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -15,7 +15,7 @@ public class Game {
     
 	
 	int players;
-	ArrayList<ArrayList<Card>> hands;
+	ArrayList<Hand> hands;
     int twoOfClubs;
 	
 	/*
@@ -47,9 +47,9 @@ public class Game {
 			}
 		}
 		// deal cards
-		hands = new ArrayList<ArrayList<Card>>();
+		hands = new ArrayList<Hand>();
 		for (int player = 0; player < 4; player++) {
-			hands.add(new ArrayList<Card>());
+			hands.add(new Hand());
 			for (int i = 0; i < 13; i++) {
 			    int cardIndex = rand.nextInt(deck.size());
 			    Card cardToAdd = deck.remove(cardIndex);
@@ -62,7 +62,15 @@ public class Game {
 			    hands.get(player).add(cardToAdd);
 			}
 		}
-		
+		//sort hands
+		for (Hand h : hands) {
+			h.sort();
+		}
+		// computer players
+		// print out initial hands
+		for (Hand h : hands) {
+		    h.print();
+		}
 	}
 	
 	public static void main(String[] args) {
@@ -76,13 +84,6 @@ public class Game {
 		game.strategies[2] = TRICK;
 		game.strategies[3] = TRICK;
 
-		game.sortHands();
-
-		// computer players
-		// print out initial hands
-		for (int i = 0; i < 4; i++) {
-		    System.out.println(game.hands.get(i));
-		}
 
 		// play 5 tricks
 		// stores whether or not a heart has been played
@@ -158,44 +159,43 @@ public class Game {
     }
 
     public Card playCard(int playerNum, ArrayList<Card> trick, boolean heartsPlayed, boolean firstTrick, int strategy) {
-	ArrayList<Card> hand = hands.get(playerNum);
+	Hand hand = hands.get(playerNum);
 	if (firstTrick) {
 	    // play the two of clubs
 	    for (int i = 0; i < hand.size(); i++) {
-		Card c = hand.get(i);
-		if (c.getSuit() == Card.CLUBS && c.getVal() == 2) {
-		    return c;
-		}
+			Card c = hand.get(i);
+			if (c.getSuit() == Card.CLUBS && c.getVal() == 2) {
+			    return c;
+			}
 	    }
 	}
 
-	ArrayList<Card> validCards = hand;
-
-	ArrayList<Card> leadingSuitCards = new ArrayList<Card>();
+	Boolean hasLeadingSuit = false;
+	
+	ArrayList<Card> mylist = new ArrayList<Card>();
 	if (trick.size() > 0) {
 	    // if the player has a card in the leading suit, must play that card
 	    // compile a list of cards in the player's hand of the leading suit
 	    int leadingSuit = trick.get(0).getSuit();
-
-	    for (int i = 0; i < hand.size(); i++) {
-		if (hand.get(i).getSuit() == leadingSuit) {
-		    leadingSuitCards.add(hand.get(i));
-		}
+	    mylist = hand.cardsInSuit(leadingSuit);
+	    if (mylist.size() > 0) {
+	    	hasLeadingSuit = true;
+	    } else {
+	    	mylist = hand.getList();
 	    }
 	} else {
+		mylist = hand.getList();
 	    // this player is leading the trick
 	    // can only lead with hearts if hearts have already been played
 	    if (!heartsPlayed) {
-		validCards = new ArrayList<Card>();
-		for (int i = 0; i < hand.size(); i++) {
-		    if (hand.get(i).getSuit() != hand.get(i).HEARTS) {
-			validCards.add(hand.get(i));
-		    }
-		}
+	    	mylist = new ArrayList<Card>();
+	    	mylist.addAll(hand.cardsInSuit(Card.SPADES));
+	    	mylist.addAll(hand.cardsInSuit(Card.CLUBS));
+	    	mylist.addAll(hand.cardsInSuit(Card.SPADES));
 		
-		// if there are no valid cards, that means the user only has hearts left
-		// so we set valid cards back to the entire hand
-		if (validCards.size() == 0) { validCards = hand; }
+	    	// 	if there are no valid cards, that means the user only has hearts left
+	    	// so we set valid cards back to the entire hand
+	    	if (mylist.size() == 0) { mylist = hand.getList(); }
 	    }
 	}
 
@@ -203,24 +203,24 @@ public class Game {
 	Random r = new Random();
 	Card card;
 	// case when the hand has cards of the leading suit
-	if (leadingSuitCards.size() > 0) {
+	if (hasLeadingSuit) {
 	    if (strategy == this.RANDOM) {
-		card = leadingSuitCards.get(r.nextInt(leadingSuitCards.size()));
+		card = mylist.get(r.nextInt(mylist.size()));
 	    } else { // if strategy == TRICK
 		// find the lowest value card
-		card = leadingSuitCards.get(0);
-		for (int i = 1; i < leadingSuitCards.size(); i++) {
-		    Card other = leadingSuitCards.get(i);
+		card = mylist.get(0);
+		for (int i = 1; i < mylist.size(); i++) {
+		    Card other = mylist.get(i);
 		    if (other.getVal() < card.getVal()) { card = other; }
 		}
 	    }
 	} else {
 	    if (strategy == this.RANDOM) {
-		card = validCards.get(r.nextInt(validCards.size()));
+		card = mylist.get(r.nextInt(mylist.size()));
 	    } else { // if strategy == TRICK
-		card = validCards.get(0);
-		for (int i = 1; i < validCards.size(); i++) {
-		    Card other = validCards.get(i);
+		card = mylist.get(0);
+		for (int i = 1; i < mylist.size(); i++) {
+		    Card other = mylist.get(i);
 		    if (other.getVal() > card.getVal()) { card = other; }
 		}
 	    }
@@ -229,42 +229,4 @@ public class Game {
 	return card;
     }
 
-    // sorts each player's hand for readability
-    public void sortHands() {
-	for (int i = 0; i < hands.size(); i++) {
-	    ArrayList<Card> hand = hands.get(i);
-	    ArrayList<Card> hearts = new ArrayList<Card>();
-	    ArrayList<Card> diamonds = new ArrayList<Card>();
-	    ArrayList<Card> clubs = new ArrayList<Card>();
-	    ArrayList<Card> spades = new ArrayList<Card>();
-
-	    for (int j = 0; j < hand.size(); j++) {
-		Card curCard = hand.get(j);
-		if (curCard.getSuit() == Card.HEARTS) { hearts.add(curCard); }
-		else if (curCard.getSuit() == Card.DIAMONDS) { diamonds.add(curCard); }
-		else if (curCard.getSuit() == Card.CLUBS) { clubs.add(curCard); }
-		else { spades.add(curCard); }
-	    }
-
-	    for (int j = 0; j < hearts.size(); j++) {
-		hand.set(j, hearts.get(j));
-	    }
-
-	    for (int j = 0; j < diamonds.size(); j++) {
-		hand.set(j + hearts.size(), diamonds.get(j));
-	    }
-
-	    for (int j = 0; j < clubs.size(); j++) {
-		hand.set(j + hearts.size() + diamonds.size(), clubs.get(j));
-	    }
-
-	    for (int j = 0; j < spades.size(); j++) {
-		hand.set(j + hearts.size() + diamonds.size() + clubs.size(), spades.get(j));
-	    }
-
-		   
-
-	}
-    }
-	
 }

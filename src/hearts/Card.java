@@ -1,4 +1,4 @@
-//package hearts;
+package hearts;
 
 import java.util.HashMap;
 
@@ -36,9 +36,7 @@ public class Card {
 		valString.put(11,"jack");
 		valString.put(12,"queen");
 		valString.put(13,"king");
-		valString.put(14,"ace");
-		
-
+		valString.put(14,"ace");	
 	}
 	
 	public int getSuit() {
