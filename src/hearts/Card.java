@@ -51,6 +51,13 @@ public class Card {
     public String toString() {
 	return valString.get(val) + " of " + suitString.get(suit);
     }
+    
+    public boolean equals(Card other) {
+    	if (suit == other.getSuit() && val == other.getVal()) {
+    		return true;
+    	}
+    	return false;
+    }
 	
     public static Comparator<Card> cardComparator() {
     	 Comparator<Card> comp = new Comparator<Card>(){

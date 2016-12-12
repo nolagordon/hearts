@@ -2,7 +2,7 @@ package hearts;
 
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.Scanner;
+//import java.util.Scanner;
 
 public class Game {
 
@@ -11,31 +11,45 @@ public class Game {
     // AI always aims to lose the trick
     public final static int TRICK = 1;
 
-    int[] strategies;
-    
-	
 	int players;
 	ArrayList<Hand> hands;
+	ArrayList<Card[]> tricks;
+	HeartsTransition lastTransition;
+	int[] scores;
+	int[] strategies;
     int twoOfClubs;
-	
-	/*
-	public Game(int players) {
-		if (players >=3 && players <= 5) {
-			this.players = players;
-			deal();
-		} else {
-			System.out.println("Unsuitable number of players");
-		}
-		
-	}
-	*/
+    //Scanner scanner;
+    int turn;
+    int userNum;
+    boolean heartsPlayed;
 	
 	public Game() {
 		this.players = 4;
 		strategies = new int[4];
+		scores = new int[4];
+		tricks = new ArrayList<Card[]>();
+		for (int i = 0; i < 13; i++) {
+			tricks.add(new Card[4]);
+		}
 		deal();
+		
+		//scanner = new Scanner(System.in);
+		// choose a player number to represent he user
+		// TEMPORARILY REMOVE USER INPUT int userNum = 0;
+		userNum = 17;
+		this.strategies[0] = TRICK;
+		this.strategies[1] = TRICK;
+		this.strategies[2] = TRICK;
+		this.strategies[3] = TRICK;
+
+		// play tricks
+		// stores whether or not a heart has been played
+		heartsPlayed = false;
+		/*for (trickNum = 0; trickNum < 13; trickNum++) {
+			playTrick();
+		}*/
 	}
-	
+		
 	// deal 13 cards to each of 4 players
 	private void deal() {
 		// populate deck of cards
@@ -73,160 +87,131 @@ public class Game {
 		}
 	}
 	
-	public static void main(String[] args) {
-		Game game = new Game();
-		Scanner scanner = new Scanner(System.in);
-		// choose a player number to represent he user
-		// TEMPORARILY REMOVE USER INPUT int userNum = 0;
-		int userNum = 17;
-		game.strategies[0] = TRICK;
-		game.strategies[1] = TRICK;
-		game.strategies[2] = TRICK;
-		game.strategies[3] = TRICK;
-
-
-		// play 5 tricks
-		// stores whether or not a heart has been played
-		boolean heartsPlayed = false;
-		boolean firstTrick = true;
-		int leader = game.twoOfClubs;
-		for (int i = 0; i < 13; i++) {
-		    System.out.println("Trick " + (i+1) + ":");
-		    ArrayList<Card> trick = new ArrayList<Card>();
-
-		    // let each player take their turn during the trick
-		    for (int j = 0; j < game.players; j++) {
-		   
-			// calculate which player goes next in the trick
-			int playerNum = (leader + j) % game.players;
-			Card playedCard = null;
-
-			if (playerNum == userNum) {
-			    // if it is the user's turn, show them their hand and let them pick a card
-			    System.out.println("This is your hand: ");
-			    game.printHand(userNum);
-
-			    System.out.print("Pick a card to play: ");
-			    playedCard = game.hands.get(userNum).get(scanner.nextInt());
-			    System.out.println("You played the " + playedCard);
-			    game.hands.get(userNum).remove(playedCard);
-			   
-			} else {
-			    // otherwise the computer is taking a move
-			    // so run the method that lets them choose a card
-			    playedCard = game.playCard(playerNum, trick, heartsPlayed, firstTrick, game.strategies[playerNum]);
-			    System.out.println("Player " + playerNum + " played the " + playedCard);
-
+	//return player with lowest score, if tied picks higher player num
+	public int lowestScorePlayer() {
+		int lowest = 0;
+		boolean currentIsLowest = true;
+		for (int i = 0; i < players; i++) {
+			for (int j = 0; j < players; j++) {
+				if (i != j) {
+					if (scores[i] > scores[j]) {
+						currentIsLowest = false;
+					}
+				}
 			}
+			if (currentIsLowest) {
+				lowest = i;
+			}
+			currentIsLowest = true;
+		}
+		return lowest;
+	}
 
-			//TODO: is there a better place to put this?
-			// if the suit of the card played is hearts, then hearts have been played
-			if (playedCard.getSuit() == Card.HEARTS) { heartsPlayed = true; }
-			firstTrick = false;
-			trick.add(playedCard);
+	public ArrayList<Hand> getHands() {
+		return hands;
+	}
+	
+	public int getTurn() {
+		return turn;
+	}
+	
+	// play card, return next player
+	public int playCard(HeartsTransition transition) {
+		Card card = transition.getCard();
+		int playerNum = transition.getPlayer();
+		lastTransition = transition;
+		Card[] trick = tricks.get(turn/4);
+		// if it is the user's turn, show them their hand and let them pick a card
+		/*
+		if (playerNum == userNum) {
+		    System.out.println("This is your hand: ");
+		    this.getHands().get(userNum).print();
+		    System.out.print("Pick a card to play: ");
+		    card = this.hands.get(userNum).get(scanner.nextInt());
+		    this.hands.get(userNum).remove(card);
+		    System.out.println("You played the " + card);
+		} */
+		
+	    this.hands.get(playerNum).remove(card);
+	    System.out.println("Player " + playerNum + " played the " + card);
+		trick[playerNum] = card;
 
-		    }
+		//TODO: is there a better place to put this?
+		// if the suit of the card played is hearts, then hearts have been played
+		if (card.getSuit() == Card.HEARTS) { heartsPlayed = true; }
 
+		// calculate which player goes next in the trick
+		int nextPlayer = (playerNum + 1) % players;
+
+		// if last turn of trick, choose winner
+		if (turn % players == players - 1) {
 		    // figure out the highest card of the leading suit in the trick
 		    // to determine who won the trick
-		    int leadingSuit = trick.get(0).getSuit();
-		    int winner = leader;
-		    Card winningCard = trick.get(0);
-		    for (int j = 1; j < game.players; j++) {
-			Card card = trick.get(j);
-
-			// the player with the highest value card in the leading suit wins the trick
-			if (card.getSuit() == leadingSuit && card.getVal() > winningCard.getVal()) {
-			    winner = (j + leader) % game.players;
-			    winningCard = card;
-			}
+		    int leadingSuit = trick[0].getSuit();
+		    Card winningCard = trick[0];
+		    int winner = 0;
+		    for (int j = 1; j < this.players; j++) {
+				Card c = trick[j];
+				// the player with the highest value card in the leading suit wins the trick
+				if (c.getSuit() == leadingSuit && c.getVal() > winningCard.getVal()) {
+				    winner = (j + playerNum) % this.players;
+				    winningCard = c;
+				}
 		    }
-
-		    if (winner == userNum) { System.out.println("You won this trick"); }
-		    else {System.out.println("Player " + winner + " won this trick"); }
-		    leader = winner;
-
+	    	System.out.println("Player " + winner + " won this trick");
+		    nextPlayer = winner;
+			System.out.println("Trick " + (turn/4 + 1) + ":");    
 		}
-
-		
+		turn++;
+		return nextPlayer;
 	}
-
-    public void printHand(int playerNum) {
-	// todo: change the 13 to something less concrete
-	for(int i = 0; i < hands.get(playerNum).size(); i++) {
-	    System.out.println(i + ". " + hands.get(playerNum).get(i));
-	}
-    }
-
-    public Card playCard(int playerNum, ArrayList<Card> trick, boolean heartsPlayed, boolean firstTrick, int strategy) {
-	Hand hand = hands.get(playerNum);
-	if (firstTrick) {
-	    // play the two of clubs
-	    for (int i = 0; i < hand.size(); i++) {
-			Card c = hand.get(i);
-			if (c.getSuit() == Card.CLUBS && c.getVal() == 2) {
-			    return c;
-			}
-	    }
-	}
-
-	Boolean hasLeadingSuit = false;
 	
-	ArrayList<Card> mylist = new ArrayList<Card>();
-	if (trick.size() > 0) {
-	    // if the player has a card in the leading suit, must play that card
-	    // compile a list of cards in the player's hand of the leading suit
-	    int leadingSuit = trick.get(0).getSuit();
-	    mylist = hand.cardsInSuit(leadingSuit);
-	    if (mylist.size() > 0) {
-	    	hasLeadingSuit = true;
-	    } else {
-	    	mylist = hand.getList();
-	    }
-	} else {
-		mylist = hand.getList();
-	    // this player is leading the trick
-	    // can only lead with hearts if hearts have already been played
-	    if (!heartsPlayed) {
-	    	mylist = new ArrayList<Card>();
-	    	mylist.addAll(hand.cardsInSuit(Card.SPADES));
-	    	mylist.addAll(hand.cardsInSuit(Card.CLUBS));
-	    	mylist.addAll(hand.cardsInSuit(Card.SPADES));
-		
-	    	// 	if there are no valid cards, that means the user only has hearts left
-	    	// so we set valid cards back to the entire hand
-	    	if (mylist.size() == 0) { mylist = hand.getList(); }
-	    }
-	}
+	// undo playing of card, return player
+	public int unplayCard(Card card, int playerNum) {
+		//assert we are undoing most recent move
+		assert card == lastTransition.getCard() && playerNum == lastTransition.getPlayer();
+	    this.hands.get(playerNum).add(card);
 
-	// We've compiled a list of valid to choose from
-	Random r = new Random();
-	Card card;
-	// case when the hand has cards of the leading suit
-	if (hasLeadingSuit) {
-	    if (strategy == this.RANDOM) {
-		card = mylist.get(r.nextInt(mylist.size()));
-	    } else { // if strategy == TRICK
-		// find the lowest value card
-		card = mylist.get(0);
-		for (int i = 1; i < mylist.size(); i++) {
-		    Card other = mylist.get(i);
-		    if (other.getVal() < card.getVal()) { card = other; }
-		}
+		//TODO: is there a better place to put this?
+		// if the suit of the card played is hearts, check whether was 1st heart played
+	    heartsPlayed = false;	    
+	    if (card.getSuit() == Card.HEARTS) {
+	    	outerloop:
+	    	for (Card[] trick : tricks) {
+	    		for (Card c : trick) {
+	    			if (c.getSuit() == Card.HEARTS) {
+	    				heartsPlayed = true;
+	    				break outerloop;
+	    			}
+	    		}
+	    	}
 	    }
-	} else {
-	    if (strategy == this.RANDOM) {
-		card = mylist.get(r.nextInt(mylist.size()));
-	    } else { // if strategy == TRICK
-		card = mylist.get(0);
-		for (int i = 1; i < mylist.size(); i++) {
-		    Card other = mylist.get(i);
-		    if (other.getVal() > card.getVal()) { card = other; }
+	    
+		// if first turn of trick
+		if (turn % players == 0) {
+		    // figure out who won last trick and undo points
+			int hearts = 0; //num points won in last trick
+			Card[] trick = tricks.get(turn/4 - 1);
+		    int leadingSuit = trick[0].getSuit();
+		    Card winningCard = trick[0];
+		    int winner = 0;
+		    for (int j = 1; j < this.players; j++) {
+				Card c = trick[j];
+				if (c.getSuit() == Card.HEARTS) { hearts++; }
+				// the player with the highest value card in the leading suit wins the trick
+				if (c.getSuit() == leadingSuit && c.getVal() > winningCard.getVal()) {
+				    winner = (j + playerNum) % this.players;
+				    winningCard = c;
+				}
+		    }
+		    scores[winner] += hearts;
+	    	System.out.println("Player " + winner + " won this trick");
 		}
-	    }
+	    turn--;
+		return playerNum;
 	}
-	hand.remove(card);
-	return card;
-    }
-
+	
+	public int hasTwoOfClubs() {
+		return twoOfClubs;
+	}
 }
