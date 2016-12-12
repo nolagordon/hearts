@@ -33,6 +33,15 @@ public class Hand {
 		return cards.get(index);
 	}
 	
+	public boolean contains(Card c) {
+		for (Card card : cards) {
+			if (card.equals(c)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public int size() {
 		return cards.size();
 	}
