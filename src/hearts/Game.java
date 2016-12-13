@@ -42,12 +42,8 @@ public class Game {
 		this.strategies[2] = TRICK;
 		this.strategies[3] = TRICK;
 
-		// play tricks
 		// stores whether or not a heart has been played
 		heartsPlayed = false;
-		/*for (trickNum = 0; trickNum < 13; trickNum++) {
-			playTrick();
-		}*/
 	}
 		
 	// deal 13 cards to each of 4 players
@@ -80,11 +76,10 @@ public class Game {
 		for (Hand h : hands) {
 			h.sort();
 		}
-		// computer players
 		// print out initial hands
-		for (Hand h : hands) {
+		/*for (Hand h : hands) {
 		    h.print();
-		}
+		}*/
 	}
 	
 	//return player with lowest score, if tied picks higher player num
@@ -121,19 +116,8 @@ public class Game {
 		int playerNum = transition.getPlayer();
 		lastTransition = transition;
 		Card[] trick = tricks.get(turn/4);
-		// if it is the user's turn, show them their hand and let them pick a card
-		/*
-		if (playerNum == userNum) {
-		    System.out.println("This is your hand: ");
-		    this.getHands().get(userNum).print();
-		    System.out.print("Pick a card to play: ");
-		    card = this.hands.get(userNum).get(scanner.nextInt());
-		    this.hands.get(userNum).remove(card);
-		    System.out.println("You played the " + card);
-		} */
 		
 	    this.hands.get(playerNum).remove(card);
-	    System.out.println("Player " + playerNum + " played the " + card);
 		trick[playerNum] = card;
 
 		//TODO: is there a better place to put this?
@@ -148,6 +132,7 @@ public class Game {
 		    // figure out the highest card of the leading suit in the trick
 		    // to determine who won the trick
 		    int leadingSuit = trick[0].getSuit();
+		    int hearts = 0; // count hearts in trick
 		    Card winningCard = trick[0];
 		    int winner = 0;
 		    for (int j = 1; j < this.players; j++) {
@@ -158,9 +143,8 @@ public class Game {
 				    winningCard = c;
 				}
 		    }
-	    	System.out.println("Player " + winner + " won this trick");
 		    nextPlayer = winner;
-			System.out.println("Trick " + (turn/4 + 1) + ":");    
+		    scores[winner] += hearts;
 		}
 		turn++;
 		return nextPlayer;
@@ -204,8 +188,7 @@ public class Game {
 				    winningCard = c;
 				}
 		    }
-		    scores[winner] += hearts;
-	    	System.out.println("Player " + winner + " won this trick");
+		    scores[winner] -= hearts;
 		}
 	    turn--;
 		return playerNum;
