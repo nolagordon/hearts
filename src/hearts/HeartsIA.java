@@ -43,16 +43,19 @@ public class HeartsIA extends UCT<HeartsTransition, DefaultNode<HeartsTransition
     
     private int currentPlayer;
     private int nextPlayer;
-
+    
     public HeartsIA() {
     	super();
         game = new Game();
 		currentPlayer = game.hasTwoOfClubs();
-    }
+		for (Hand hand : game.getHands()) {
+			hand.print();
+		}
+	}
 
     @Override
     public boolean isOver() {
-        return game.getTurn() >= 52;
+        return game.getTurn() >= 4*3;
     }
 
     @Override
@@ -70,13 +73,11 @@ public class HeartsIA extends UCT<HeartsTransition, DefaultNode<HeartsTransition
     @Override
     public Set<HeartsTransition> getPossibleTransitions() {
     	Set<HeartsTransition> moves = new HashSet<HeartsTransition>();
-    	// if it's the first move of the game, must be 2 of spades
+    	// if it's the first move of the game, must be 2 of clubs
     	if (game.getTurn() == 0) {
-    		moves.add(new HeartsTransition(new Card(Card.SPADES, 2), currentPlayer));
+    		moves.add(new HeartsTransition(new Card(Card.CLUBS, 2), currentPlayer));
     	} else {
-    		for (Card c : game.getHands().get(currentPlayer).getList()) {
-    			moves.add(new HeartsTransition(c, currentPlayer));
-    		}
+    		moves = game.getPossibleMoves(currentPlayer);
     	}
         return moves;
     }
@@ -116,6 +117,10 @@ public class HeartsIA extends UCT<HeartsTransition, DefaultNode<HeartsTransition
 	@Override
 	public int getCurrentPlayer() {
 		return currentPlayer;
+	}
+	
+	public Game getGame() {
+		return game;
 	}
 
 	@Override

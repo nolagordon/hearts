@@ -1,5 +1,7 @@
 package hearts;
 
+import java.util.ArrayList;
+
 import fr.avianey.mcts4j.sample.SampleRunner;
 
 /*
@@ -31,13 +33,27 @@ import fr.avianey.mcts4j.sample.SampleRunner;
 public class HeartsRunner extends SampleRunner<HeartsTransition> {
 
     public HeartsRunner() {
-        // Change the thinking depth value > 0
-        super(new HeartsIA());
+    	super(new HeartsIA());
     }
     
     public static void main(String[] args) {
         SampleRunner<HeartsTransition> runner = new HeartsRunner();
         runner.run();
+    	Game game = ((HeartsIA) runner.getMcts()).getGame();
+        System.out.println("Final scores:");
+        int[] scores = game.getScores();
+        for (int s : scores) {
+        	System.out.print(s + ", ");
+        }
+        ArrayList<Card[]> tricks = game.getTricks();
+        for (Card[] t : tricks) {
+    		for (int i = 0; i < 4; i++) {
+            	if (t[i] != null) {
+            		System.out.println(t[i]);
+            	}
+        	}
+        }
+        System.out.println("Winner: " + game.lowestScorePlayer() );
     }
     
 }

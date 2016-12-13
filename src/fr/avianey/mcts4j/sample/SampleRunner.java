@@ -43,7 +43,7 @@ public abstract class SampleRunner<T extends Transition> {
         public void onNoPossibleMove(MonteCarloTreeSearch<T, ? extends Node<T>> mcts);
     }
 
-    private MonteCarloTreeSearch<T, ? extends Node<T>> mcts;
+    protected MonteCarloTreeSearch<T, ? extends Node<T>> mcts;
     private Listener<T> listener;
 
     public SampleRunner(MonteCarloTreeSearch<T, ? extends Node<T>> mcts) {
@@ -52,6 +52,10 @@ public abstract class SampleRunner<T extends Transition> {
     
     public void setListener(Listener<T> listener) {
         this.listener = listener;
+    }
+    
+    public MonteCarloTreeSearch<T, ? extends Node<T>> getMcts() {
+    	return mcts;
     }
     
     public void run() {
