@@ -47,21 +47,25 @@ public class HeartsRunner extends SampleRunner<HeartsTransition> {
         }
 
         ArrayList<Card[]> tricks = game.getTricks();
+	ArrayList<int[]> trickScores = game.getTrickScores();
 	ArrayList<int[]> cardPlayers = game.getCardPlayers();
+	int[] winners = game.getWinners();
+
 	System.out.println("");
         for (int t = 0; t < tricks.size(); t++) {
 	    System.out.println("Trick " + t + ": ");
-	    System.out.println("Player hands: ");
-/********	    for (int i = 0; i < 4; i++) {
+	    System.out.println("Scores: ");
+	    for (int i = 0; i < 4; i++) {
 		if (tricks.get(t)[i] != null) {
-		    game.trickHands.get(t)[i].print();
+		    System.out.println("Player " + i + " has score " + trickScores.get(t)[i]);
 		}
-		}*/
+	    }
 	    for (int i = 0; i < 4; i++) {
             	if (tricks.get(t)[i] != null) {
 		    System.out.println("Player " + cardPlayers.get(t)[i] + " played the " + tricks.get(t)[i]);
             	}
 	    }
+	    System.out.println("Player " + winners[t] + " won this trick");
         }
         System.out.println("Winner: " + game.lowestScorePlayer() );
     }
