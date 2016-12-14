@@ -167,6 +167,11 @@ public class Game {
 				}
 		    }
 		    nextPlayer = winner;
+		    scores[winner] += hearts;
+		    for (int s : scores) {
+		    	System.out.print(s + " ");
+		    }
+		    System.out.println("Points subtracted");
 		}
 		turn++;
 		return nextPlayer;
@@ -210,6 +215,11 @@ public class Game {
 				    winningCard = c;
 				}
 		    }
+		    scores[winner] -= hearts;
+		    for (int s : scores) {
+		    	System.out.print(s + " ");
+		    }
+		    System.out.println();
 		}
 	    turn--;
 		return playerNum;
