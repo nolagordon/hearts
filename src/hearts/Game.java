@@ -35,6 +35,7 @@ public class Game {
     boolean heartsPlayed;
 	
 	public Game() {
+	    turn = 0;
 		this.players = 4;
 		strategies = new int[4];
 		scores = new int[4];
@@ -179,8 +180,11 @@ public class Game {
 		Card[] trick = tricks.get(turn/players);
 		
 		this.hands.get(playerNum).remove(card);
+		//		System.out.println("Removed one card from player " + playerNum);
 		trick[turn % players] = card;
 		cardPlayers.get(turn/players)[turn % players] = playerNum;
+
+		// if this is the first turn of the suit, set the leadingSuit to that card's suit
 		if (turn % players == 0) {
 		    leadingSuit = trick[0].getSuit();
 		}
@@ -223,7 +227,10 @@ public class Game {
 
 		    Hand[] trickHand = trickHands.get(turn/players);
 		    for (int j = 0; j < this.players; j++) {
-			trickHand[j] = hands.get(j); 
+			trickHand[j] = new Hand();
+			for (Card c: hands.get(j).getList()) {
+			    trickHand[j].add(c);
+			}
 		    }
 
 		    //System.out.println("Player " + winner + " won the trick and gained " + hearts + " points");
@@ -242,7 +249,7 @@ public class Game {
 	    //assert we are undoing most recent move
 	    assert card == lastTransition.getCard() && playerNum == lastTransition.getPlayer();
 	    this.hands.get(playerNum).add(card);
-	    
+
 	    //TODO: is there a better place to put this?
 	    // if the suit of the card played is hearts, check whether was 1st heart played
 	    heartsPlayed = false;	    
@@ -278,6 +285,15 @@ public class Game {
 	public int hasTwoOfClubs() {
 	    return twoOfClubs;
 	}
+
+    public Card getTwoOfClubs() {
+	for (Card c: hands.get(twoOfClubs).getList()) {
+	    if (c.getSuit() == Card.CLUBS && c.getVal() == 2) {
+		return c;
+	    }
+	}
+	return null;
+    }
 
     public ArrayList<int[]> getCardPlayers() {
 	return cardPlayers;

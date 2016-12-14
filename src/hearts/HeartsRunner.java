@@ -45,17 +45,18 @@ public class HeartsRunner extends SampleRunner<HeartsTransition> {
         for (int s : scores) {
         	System.out.print(s + ", ");
         }
+
         ArrayList<Card[]> tricks = game.getTricks();
 	ArrayList<int[]> cardPlayers = game.getCardPlayers();
 	System.out.println("");
         for (int t = 0; t < tricks.size(); t++) {
 	    System.out.println("Trick " + t + ": ");
 	    System.out.println("Player hands: ");
-	    for (int i = 0; i < 4; i++) {
+/********	    for (int i = 0; i < 4; i++) {
 		if (tricks.get(t)[i] != null) {
 		    game.trickHands.get(t)[i].print();
 		}
-	    }
+		}*/
 	    for (int i = 0; i < 4; i++) {
             	if (tricks.get(t)[i] != null) {
 		    System.out.println("Player " + cardPlayers.get(t)[i] + " played the " + tricks.get(t)[i]);

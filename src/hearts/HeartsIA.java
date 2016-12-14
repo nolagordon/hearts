@@ -55,7 +55,7 @@ public class HeartsIA extends UCT<HeartsTransition, DefaultNode<HeartsTransition
 
     @Override
     public boolean isOver() {
-        return game.getTurn() >= 16;
+        return game.getTurn() >= 52;
     }
 
     @Override
@@ -75,7 +75,7 @@ public class HeartsIA extends UCT<HeartsTransition, DefaultNode<HeartsTransition
     	Set<HeartsTransition> moves = new HashSet<HeartsTransition>();
     	// if it's the first move of the game, must be 2 of clubs
     	if (game.getTurn() == 0) {
-    		moves.add(new HeartsTransition(new Card(Card.CLUBS, 2), currentPlayer));
+	    moves.add(new HeartsTransition(game.getTwoOfClubs(), currentPlayer));
     	} else {
     		moves = game.getPossibleMoves(currentPlayer);
     	}
