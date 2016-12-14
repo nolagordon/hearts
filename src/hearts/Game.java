@@ -16,6 +16,11 @@ public class Game {
 	int players;
 	ArrayList<Hand> hands;
 	ArrayList<Card[]> tricks;
+
+    // store the trick winners and number of hearts in each trick
+    // to allow easy undoing of moves in the unplayCard method
+    int[] trickHearts;
+    int[] trickWinners;
 	HeartsTransition lastTransition;
 	int[] scores;
 	int[] strategies;
@@ -31,6 +36,8 @@ public class Game {
 		strategies = new int[4];
 		scores = new int[4];
 		tricks = new ArrayList<Card[]>();
+		trickHearts = new int[13];
+		trickWinners = new int[13];
 		leadingSuit = Card.CLUBS;
 		for (int i = 0; i < 13; i++) {
 			tricks.add(new Card[4]);
@@ -134,10 +141,10 @@ public class Game {
 		lastTransition = transition;
 		Card[] trick = tricks.get(turn/players);
 		
-	    this.hands.get(playerNum).remove(card);
+		this.hands.get(playerNum).remove(card);
 		trick[turn % players] = card;
 		if (turn % players == 0) {
-			leadingSuit = trick[0].getSuit();
+		    leadingSuit = trick[0].getSuit();
 		}
 		
 		//TODO: is there a better place to put this?
@@ -155,17 +162,24 @@ public class Game {
 		    Card winningCard = trick[0];
 		    int winner = 0;
 		    for (int j = 1; j < this.players; j++) {
-				Card c = trick[j];
-				// count hearts
-				if (c.getSuit() == Card.HEARTS) {
-					hearts++;
-				}
-				// the player with the highest value card in the leading suit wins the trick
-				if (c.getSuit() == leadingSuit && c.getVal() > winningCard.getVal()) {
-				    winner = (j + playerNum) % this.players;
-				    winningCard = c;
-				}
+			Card c = trick[j];
+			// count hearts
+			if (c.getSuit() == Card.HEARTS) {
+			    hearts++;
+			}
+			// the player with the highest value card in the leading suit wins the trick
+			if (c.getSuit() == leadingSuit && c.getVal() > winningCard.getVal()) {
+			    winner = (j + playerNum) % this.players;
+			    winningCard = c;
+			}
 		    }
+
+		    // now we know the winner and number of hearts for this trick
+		    // we can store them in trickHearts and trickWinners
+		    // to make backtracking easier later on
+		    trickWinners[turn/players] = winner;
+		    trickHearts[turn/players] = hearts;
+
 		    nextPlayer = winner;
 		    scores[winner] += hearts;
 		    for (int s : scores) {
@@ -179,53 +193,60 @@ public class Game {
 	
 	// undo playing of card, return player
 	public int unplayCard(Card card, int playerNum) {
-		//assert we are undoing most recent move
-		assert card == lastTransition.getCard() && playerNum == lastTransition.getPlayer();
+	    //assert we are undoing most recent move
+	    assert card == lastTransition.getCard() && playerNum == lastTransition.getPlayer();
 	    this.hands.get(playerNum).add(card);
-
-		//TODO: is there a better place to put this?
-		// if the suit of the card played is hearts, check whether was 1st heart played
+	    
+	    //TODO: is there a better place to put this?
+	    // if the suit of the card played is hearts, check whether was 1st heart played
 	    heartsPlayed = false;	    
 	    if (card.getSuit() == Card.HEARTS) {
 	    	outerloop:
 	    	for (Card[] trick : tricks) {
-	    		for (Card c : trick) {
-	    			if (c.getSuit() == Card.HEARTS) {
-	    				heartsPlayed = true;
-	    				break outerloop;
-	    			}
-	    		}
+		    for (Card c : trick) {
+			if (c.getSuit() == Card.HEARTS) {
+			    heartsPlayed = true;
+			    break outerloop;
+			}
+		    }
 	    	}
 	    }
 	    
-		// if first turn of trick
-		if (turn % players == 0) {
-		    // figure out who won last trick and undo points
-			int hearts = 0; //num points won in last trick
-			Card[] trick = tricks.get(turn/players - 1);
-		    int leadingSuit = trick[0].getSuit();
-		    Card winningCard = trick[0];
-		    int winner = 0;
-		    for (int j = 1; j < this.players; j++) {
-				Card c = trick[j];
-				if (c.getSuit() == Card.HEARTS) { hearts++; }
-				// the player with the highest value card in the leading suit wins the trick
-				if (c.getSuit() == leadingSuit && c.getVal() > winningCard.getVal()) {
-				    winner = (j + playerNum) % this.players;
-				    winningCard = c;
-				}
+	    // if first turn of trick
+	    if (turn % players == 0) {
+		// figure out who won last trick and undo points
+		int hearts = trickHearts[turn/players - 1]; //num points won in last trick
+		int winner = trickWinners[turn/players - 1];
+		//		Card[] trick = tricks.get(turn/players - 1);
+
+		
+		/*
+		int leadingSuit = trick[0].getSuit();
+		Card winningCard = trick[0];
+		int winner = 0;
+		for (int j = 1; j < this.players; j++) {
+		    Card c = trick[j];
+		    if (c.getSuit() == Card.HEARTS) { hearts++; }
+		    // the player with the highest value card in the leading suit wins the trick
+		    if (c.getSuit() == leadingSuit && c.getVal() > winningCard.getVal()) {
+			winner = (j + playerNum) % this.players;
+			winningCard = c;
 		    }
-		    scores[winner] -= hearts;
-		    for (int s : scores) {
-		    	System.out.print(s + " ");
-		    }
-		    System.out.println();
 		}
+		scores[winner] -= hearts;
+		*/
+		
+		scores[winner] -= hearts;
+		for (int s : scores) {
+		    System.out.print(s + " ");
+		}
+		System.out.println();
+	    }
 	    turn--;
-		return playerNum;
+	    return playerNum;
 	}
-	
+    
 	public int hasTwoOfClubs() {
-		return twoOfClubs;
+	    return twoOfClubs;
 	}
 }
