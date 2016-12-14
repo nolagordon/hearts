@@ -38,7 +38,7 @@ public class HeartsRunner extends SampleRunner<HeartsTransition> {
     
     public static void main(String[] args) {
         SampleRunner<HeartsTransition> runner = new HeartsRunner();
-        runner.run();
+        runner.run(System.currentTimeMillis(), 10000);
     	Game game = ((HeartsIA) runner.getMcts()).getGame();
         System.out.println("Final scores:");
         int[] scores = game.getScores();
@@ -46,12 +46,21 @@ public class HeartsRunner extends SampleRunner<HeartsTransition> {
         	System.out.print(s + ", ");
         }
         ArrayList<Card[]> tricks = game.getTricks();
-        for (Card[] t : tricks) {
-    		for (int i = 0; i < 4; i++) {
-            	if (t[i] != null) {
-            		System.out.println(t[i]);
+	ArrayList<int[]> cardPlayers = game.getCardPlayers();
+	System.out.println("");
+        for (int t = 0; t < tricks.size(); t++) {
+	    System.out.println("Trick " + t + ": ");
+	    System.out.println("Player hands: ");
+	    for (int i = 0; i < 4; i++) {
+		if (tricks.get(t)[i] != null) {
+		    game.trickHands.get(t)[i].print();
+		}
+	    }
+	    for (int i = 0; i < 4; i++) {
+            	if (tricks.get(t)[i] != null) {
+		    System.out.println("Player " + cardPlayers.get(t)[i] + " played the " + tricks.get(t)[i]);
             	}
-        	}
+	    }
         }
         System.out.println("Winner: " + game.lowestScorePlayer() );
     }

@@ -58,13 +58,13 @@ public abstract class SampleRunner<T extends Transition> {
     	return mcts;
     }
     
-    public void run() {
+    public void run(long startTime, long timeCap) {
         T transition;
         int turn = 0;
         while (!mcts.isOver()) {
             Set<T> transitions = mcts.getPossibleTransitions();
             if (!transitions.isEmpty()) {
-                transition = mcts.getBestTransition();
+                transition = mcts.getBestTransition(startTime, timeCap);
                 mcts.doTransition(transition);
                 if (listener != null) {
                     listener.onMove(mcts, transition, ++turn);

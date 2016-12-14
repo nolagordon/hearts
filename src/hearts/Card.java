@@ -49,7 +49,7 @@ public class Card {
 	}
 
     public String toString() {
-	return valString.get(val) + " of " + suitString.get(suit);
+	return val + " of " + suitString.get(suit);
     }
     
     public boolean equals(Card other) {

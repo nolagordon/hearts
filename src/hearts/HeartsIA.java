@@ -55,7 +55,7 @@ public class HeartsIA extends UCT<HeartsTransition, DefaultNode<HeartsTransition
 
     @Override
     public boolean isOver() {
-        return game.getTurn() >= 4*4;
+        return game.getTurn() >= 16;
     }
 
     @Override
@@ -99,7 +99,7 @@ public class HeartsIA extends UCT<HeartsTransition, DefaultNode<HeartsTransition
 
 	@Override
 	public HeartsTransition simulationTransition(Set<HeartsTransition> possibleTransitions) {
-		List<HeartsTransition> transitions = new ArrayList<HeartsTransition>(possibleTransitions);
+	 	List<HeartsTransition> transitions = new ArrayList<HeartsTransition>(possibleTransitions);
 		return transitions.get((int) Math.floor(Math.random() * possibleTransitions.size()));
 	}
 

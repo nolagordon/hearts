@@ -15,7 +15,7 @@ import java.util.Set;
  * </ol>
  * The is a stateful implementation of the algorithm meaning that each of the four above steps modify
  * the state of the game and take care of restoring it before returning... To use the algorithm, just
- * implement all of the abstract methods of this class (and respect the contract of each one). Then,
+p * implement all of the abstract methods of this class (and respect the contract of each one). Then,
  * get the best choice for the current player with {@link #getBestTransition()} and do it by calling
  * {@link #doTransition(Transition)}. {@link #undoTransition(Transition)} allow you to rollback a choice.
  * 
@@ -27,10 +27,10 @@ import java.util.Set;
 // TODO describe pass, skip actions
 public abstract class MonteCarloTreeSearch<T extends Transition, N extends Node<T>> {
     
-	/**
-	 * This is where we are.
-	 * Each {@link Node} keeps a reference to its parent {@link Node} and to each child {@link Node}.
-	 */
+    /**
+     * This is where we are.
+     * Each {@link Node} keeps a reference to its parent {@link Node} and to each child {@link Node}.
+     */
     private Path<T, N> pathToRoot;
     
     public MonteCarloTreeSearch() {
@@ -49,7 +49,7 @@ public abstract class MonteCarloTreeSearch<T extends Transition, N extends Node<
      * @return the best {@link Transition} for the current player or
      *      null if the current player has no possible move.
      */
-    public T getBestTransition() {
+    public T getBestTransition(long startTime, long timeCap) {
         if (getPossibleTransitions().isEmpty()) {
             return null;
         }
@@ -65,6 +65,12 @@ public abstract class MonteCarloTreeSearch<T extends Transition, N extends Node<
 	            int winner = simulation();
 	            backPropagation(path, winner);
 	        }
+		
+		// impose time cap so we don't run out of space/time
+		if (System.currentTimeMillis() - startTime > timeCap) {
+		    stop = true;
+		}
+
         } while (path != null && !stop);
         // state is restored
         assert currentPlayer == getCurrentPlayer();
