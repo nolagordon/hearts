@@ -7,6 +7,7 @@ See original code at:
 http://www.cse.unsw.edu.au/~cs9417ml/RL1/index.html
  */
 package rl;
+
 import hearts.Game;
 import java.util.ArrayList;
 
@@ -19,7 +20,10 @@ public class TDLearner {
 
     double decay = 0.5;
 
-    public TDLearner(int numFeatures) {
+    public TDLearner(int numFeatures, boolean and, boolean or) {
+	int totalFeatures = numFeatures;
+	if (and) totalFeatures += numFeatures * numFeatures;
+	if (or) totalFeatures += numFeatures * numFeatures;
 	learner = new Perceptron(numFeatures, LF);
 
 	int gameCount = 0;

@@ -27,15 +27,21 @@ public class GameState {
     ArrayList<Hand> hands;
     Hand playerHand;
     boolean terminal;
+
+    // store whether we want to and/or the features
+    boolean or;
+    boolean and;
     
     public static final int NUM_FEATURES = 7;
     
-    public GameState(int[] scores, int playerScore, ArrayList<Hand> hands, Hand playerHand, boolean terminal) {
+    public GameState(int[] scores, int playerScore, ArrayList<Hand> hands, Hand playerHand, boolean terminal, boolean or, boolean and) {
 	this.scores = scores;
 	this.playerScore = playerScore;
 	this.hands = hands;
 	this.playerHand = playerHand;
 	this.terminal = terminal;
+	this.and = and;
+	this.or = or;
     }
 
     public int getScore() {
@@ -47,8 +53,11 @@ public class GameState {
     }
 
     public double[] getFeatureArr() {
+	int totalFeatures = NUM_FEATURES;
+	if (or) { totalFeatures += NUM_FEATURES * NUM_FEATURES; }
+	if (and) { totalFeatures += NUM_FEATURES * NUM_FEATURES; }
 
-	double[] result = new double[NUM_FEATURES];
+	double[] result = new double[totalFeatures];
 	// for now just deal with whether we are short cards
 	// first four features say whether the player is short different suits
 	for (int i = 0; i < 4; i++) {
@@ -85,6 +94,23 @@ public class GameState {
 	}
 	result[curFeature++] = totalScore - playerScore;
 	result[curFeature++] = 13 - totalScore;
+
+	// add the results of bitwise and/bitwise or if they are turned on
+	if (or) {
+	    for (int i = 0; i < NUM_FEATURES; i++) {
+		for (int j = 0; j < NUM_FEATURES; j++) {
+		    result[curFeature++] = result[i] | result[j];
+		}
+	    }
+	}
+
+	if (and) {
+	    for (int i = 0; i < NUM_FEATURES; i++) {
+		for (int j = 0; j < NUM_FEATURES; j++) {
+		    result[curFeature++] = result[i] & result[j];
+		}
+	    }
+	}
 
 	return result;
     }
