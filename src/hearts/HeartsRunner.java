@@ -30,7 +30,7 @@ import fr.avianey.mcts4j.sample.SampleRunner;
  * original code @author antoine vianey
  * modified by @author ameliaarcher and @author nola gordon
  */
-public class HeartsRunner extends SampleRunner<HeartsTransition> {
+public class HeartsRunner extends SampleRunner<HeartsTransition> implements PlayerInterface {
 
     public HeartsRunner(Game game) {
     	super(new HeartsIA(game));
@@ -45,7 +45,6 @@ public class HeartsRunner extends SampleRunner<HeartsTransition> {
         }
 
         ArrayList<Card[]> tricks = simulatedGame.getTricks();
-		ArrayList<int[]> trickScores = simulatedGame.getTrickScores();
 		ArrayList<int[]> cardPlayers = simulatedGame.getCardPlayers();
 		int[] winners = simulatedGame.getWinners();
 	
@@ -54,9 +53,6 @@ public class HeartsRunner extends SampleRunner<HeartsTransition> {
 	    System.out.println("Trick " + t + ": ");
 	    System.out.println("Scores: ");
 	    for (int i = 0; i < 4; i++) {
-		if (tricks.get(t)[i] != null) {
-		    System.out.println("Player " + i + " has score " + trickScores.get(t)[i]);
-		}
 	    }
 	    for (int i = 0; i < 4; i++) {
             	if (tricks.get(t)[i] != null) {
@@ -69,11 +65,21 @@ public class HeartsRunner extends SampleRunner<HeartsTransition> {
 
     }
     
-    public static void main(String[] args) {
+    public Card playTurn(Game game) {
+    	Game gameBaby = game.clone();
+    	int turn = gameBaby.turn;
+    	System.out.println("**********");
+    	HeartsRunner runSearch = new HeartsRunner(gameBaby);
+    	runSearch.run(System.currentTimeMillis(), 10000);
+    	System.out.println("Finished tree search");
+    	return ((HeartsIA)runSearch.getMcts()).getGame().getTricks().get(turn/4)[turn % 4];
+    }
+    
+   /* public static void main(String[] args) {
     	Game game = new Game();
         HeartsRunner runner = new HeartsRunner(game);
         runner.run(System.currentTimeMillis(), 10000);
         runner.printRunInfo();
-    }
+    }*/
     
 }

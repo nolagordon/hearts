@@ -64,7 +64,8 @@ public class Card {
     	     @Override
     	     public int compare(Card c1, Card c2)
     	     {
-    	         if (c1.getSuit() == c2.getSuit()) {
+    	         if (c1.getSuit() == 
+    	        		 c2.getSuit()) {
     	        	 if (c1.getVal() < c2.getVal()) {
     	        		 return -1;
     	        	 } else if (c1.getVal() > c2.getVal()) {

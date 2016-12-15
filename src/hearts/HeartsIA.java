@@ -58,19 +58,6 @@ public class HeartsIA extends UCT<HeartsTransition, DefaultNode<HeartsTransition
 			hand.print();
 		}
 		this.game = game;
-    }	
-
-    
-    //TODO
-    // Make new tree with given moves from game already constructed
-    public void reset(Game game) {
-    	HeartsTransition[] transitions = game.getMctsTransitions();
-    	pathToRoot = new Path<HeartsTransition, DefaultNode<HeartsTransition>>(newNode(null, false));
-    	for (int turn = 0; turn < game.getTurn(); turn++) {
-    		this.pathToRoot = new Path<HeartsTransition, DefaultNode<HeartsTransition>>(pathToRoot.endNode());
-    		this.pathToRoot.endNode().makeRoot();
-    	} 
-    	
     }
     
     @Override

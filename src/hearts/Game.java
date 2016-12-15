@@ -14,11 +14,8 @@ public class Game {
 
     int currentPlayer;
 	int players;
-	ArrayList<Card> deck;
 	ArrayList<Hand> hands;
 	ArrayList<Card[]> tricks;
-    ArrayList<Hand[]> trickHands;
-    ArrayList<int[]> trickScores;
     HeartsTransition[] mctsTransitions;
 
     ArrayList<int[]> cardPlayers;
@@ -41,21 +38,16 @@ public class Game {
 		this.players = 4;
 		scores = new int[4];
 
-		deck = new ArrayList<Card>();
 		tricks = new ArrayList<Card[]>();
 		cardPlayers = new ArrayList<int[]>();
 		trickHearts = new int[13];
 		trickWinners = new int[13];
-		trickHands = new ArrayList<Hand[]>();
-		trickScores = new ArrayList<int[]>();
 	    mctsTransitions = new HeartsTransition[13];
 
 		leadingSuit = Card.CLUBS;
 		for (int i = 0; i < 13; i++) {
 		    tricks.add(new Card[4]);
-		    trickHands.add(new Hand[4]);
 		    cardPlayers.add(new int[4]);
-		    trickScores.add(new int[4]);
 		}
 		deal();
 
@@ -174,6 +166,7 @@ public class Game {
 		// if this is the first turn of the suit, set the leadingSuit to that card's suit
 		if (turn % players == 0) {
 		    leadingSuit = trick[0].getSuit();
+
 		}
 		
 		//TODO: is there a better place to put this?
@@ -218,15 +211,6 @@ public class Game {
 		    nextPlayer = winner;
 		    scores[winner] += hearts;
 
-		    Hand[] trickHand = trickHands.get(turn/players);		   
-		    int[] trickScore = trickScores.get(turn/players);
-		    for (int j = 0; j < this.players; j++) {
-			trickHand[j] = new Hand();
-			trickScore[j] = scores[j];
-				for (Card c: hands.get(j).getList()) {
-				    trickHand[j].add(c);
-				}
-		    }
 		}
 		turn++;
 		return nextPlayer;
@@ -283,10 +267,6 @@ public class Game {
     	return cardPlayers;
     }
 
-    public ArrayList<int[]> getTrickScores() {
-    	return trickScores;
-    }
-
     public int[] getWinners() {
     	return trickWinners;
     }
@@ -297,6 +277,31 @@ public class Game {
     
     public int getCurrentPlayer() {
     	return currentPlayer;
+    }
+    
+    public Game clone() {
+    	Game clone = new Game();
+    	clone.currentPlayer = this.currentPlayer;
+    	clone.players = this.players;
+    	clone.hands = this.hands;
+    	clone.tricks = this.tricks;
+        clone.mctsTransitions = this.mctsTransitions;
+
+        clone.cardPlayers = this.cardPlayers;
+
+        // store the trick winners and number of hearts in each trick
+        // to allow easy undoing of moves in the unplayCard method
+        clone.trickHearts = this.trickHearts;
+        clone.trickWinners = this.trickWinners;
+
+        // HeartsTransition lastTransition;
+        clone.scores = this.scores;
+        clone.twoOfClubs = this.twoOfClubs;
+        clone.turn = this.turn;
+        clone.leadingSuit = this.leadingSuit;
+        clone.userNum = this.userNum;
+        clone.heartsPlayed = this.heartsPlayed;
+    	return clone;
     }
     
 }
