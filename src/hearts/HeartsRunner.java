@@ -66,12 +66,20 @@ public class HeartsRunner extends SampleRunner<HeartsTransition> implements Play
     }
     
     public Card playTurn(Game game) {
+	System.out.println("calling playTurn method");
+	
     	Game gameBaby = game.clone();
     	int turn = gameBaby.turn;
     	System.out.println("**********");
+	gameBaby.printHands();
+	
     	HeartsRunner runSearch = new HeartsRunner(gameBaby);
-    	runSearch.run(System.currentTimeMillis(), 10000);
+	System.out.println("checkpt 1");
+    	runSearch.run(System.currentTimeMillis(), 100);
+	System.out.println("checkpt 2");
     	System.out.println("Finished tree search");
+	
+
     	return ((HeartsIA)runSearch.getMcts()).getGame().getTricks().get(turn/4)[turn % 4];
     }
     

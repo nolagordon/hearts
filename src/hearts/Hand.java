@@ -59,5 +59,13 @@ public class Hand {
 		}
 		return inSuit;
 	}
+    
+    public Hand clone() {
+	Hand clone = new Hand();
+	for (Card c : cards) {
+	    clone.add(c);
+	}
+	return clone;
+    }
 	
 }

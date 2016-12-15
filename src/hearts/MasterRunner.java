@@ -44,7 +44,7 @@ public class MasterRunner {
 		players.add(makePlayer(player3Type));
 
 		int playerNum;
-		while (game.getTurn() < 52) {
+		while (game.getTurn() < 4) {
 			System.out.println("Game turn = " + game.getTurn());
 			playerNum = game.getCurrentPlayer();
 			Card toPlay = players.get(playerNum).playTurn(game);

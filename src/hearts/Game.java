@@ -117,6 +117,10 @@ public class Game {
 	}
 	
 	public Set<HeartsTransition> getPossibleMoves(int currentPlayer) {
+	    System.out.println("\n\n It's player " + currentPlayer + "'s turn");
+	    System.out.println("\n\n HANDS \n\n");
+
+	    printHands();
 	    Hand hand = hands.get(currentPlayer);
 	    Set<HeartsTransition> moves = new HashSet<HeartsTransition>();
 	  
@@ -145,6 +149,12 @@ public class Game {
 			for (Card c : hand.getList()) {
 			    moves.add(new HeartsTransition(c, currentPlayer));
 			}
+	    }
+	    
+	    if (moves.isEmpty()) {
+		System.out.println("size of hand is " + hand.size());
+		System.out.println("Error! Moves empty!");
+		System.exit(0);
 	    }
 
 	    return moves;
@@ -278,12 +288,24 @@ public class Game {
     public int getCurrentPlayer() {
     	return currentPlayer;
     }
+
+    public void printHands() {
+	for (Hand h : hands) {
+	    for (Card c : h.getList()) {
+		System.out.println(c);
+	    }
+	    System.out.println("xxxxxxxxxxxxxxxx");
+	}
+    }
     
     public Game clone() {
     	Game clone = new Game();
     	clone.currentPlayer = this.currentPlayer;
     	clone.players = this.players;
-    	clone.hands = this.hands;
+    	clone.hands = new ArrayList<Hand>();
+	for (Hand h: hands) {
+	    clone.hands.add(h.clone());
+	}
     	clone.tricks = this.tricks;
         clone.mctsTransitions = this.mctsTransitions;
 
