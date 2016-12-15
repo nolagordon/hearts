@@ -7,17 +7,11 @@ import java.util.Set;
 
 public class Game {
 
-    // represents AI choosing random cards
-    public final static int RANDOM = 0;
-    // AI always aims to lose the trick
-    public final static int TRICK = 1;
-
     int currentPlayer;
 	int players;
 	ArrayList<Hand> hands;
 	ArrayList<Card[]> tricks;
     HeartsTransition[] mctsTransitions;
-
     ArrayList<int[]> cardPlayers;
 
     // store the trick winners and number of hearts in each trick
@@ -30,7 +24,6 @@ public class Game {
     int twoOfClubs;
     int turn;
     int leadingSuit;
-    int userNum;
     boolean heartsPlayed;
 	
 	public Game() {
@@ -117,10 +110,10 @@ public class Game {
 	}
 	
 	public Set<HeartsTransition> getPossibleMoves(int currentPlayer) {
-	    System.out.println("\n\n It's player " + currentPlayer + "'s turn");
-	    System.out.println("\n\n HANDS \n\n");
-
-	    printHands();
+	    //System.out.println("\n\n It's player " + currentPlayer + "'s turn, turn # " + turn);
+	    //System.out.println("\n\n HANDS \n\n");
+	    
+	    //printHands();
 	    Hand hand = hands.get(currentPlayer);
 	    Set<HeartsTransition> moves = new HashSet<HeartsTransition>();
 	  
@@ -151,12 +144,12 @@ public class Game {
 			}
 	    }
 	    
-	    if (moves.isEmpty()) {
+	    /*if (moves.isEmpty()) {
 		System.out.println("size of hand is " + hand.size());
 		System.out.println("Error! Moves empty!");
 		System.exit(0);
 	    }
-
+*/
 	    return moves;
 	}
 	
@@ -302,26 +295,27 @@ public class Game {
     	Game clone = new Game();
     	clone.currentPlayer = this.currentPlayer;
     	clone.players = this.players;
-    	clone.hands = new ArrayList<Hand>();
-	for (Hand h: hands) {
-	    clone.hands.add(h.clone());
-	}
-    	clone.tricks = this.tricks;
-        clone.mctsTransitions = this.mctsTransitions;
-
-        clone.cardPlayers = this.cardPlayers;
-
-        // store the trick winners and number of hearts in each trick
-        // to allow easy undoing of moves in the unplayCard method
-        clone.trickHearts = this.trickHearts;
-        clone.trickWinners = this.trickWinners;
-
-        // HeartsTransition lastTransition;
-        clone.scores = this.scores;
         clone.twoOfClubs = this.twoOfClubs;
         clone.turn = this.turn;
         clone.leadingSuit = this.leadingSuit;
-        clone.userNum = this.userNum;
+
+        clone.cardPlayers = new ArrayList<int[]>();
+        clone.tricks = new ArrayList<Card[]>();
+        for (int i = 0; i < 13; i++) {
+        	clone.tricks.add(this.tricks.get(i).clone());
+    		clone.cardPlayers.add(this.cardPlayers.get(i).clone());
+    	}
+        
+    	clone.hands = new ArrayList<Hand>();
+        for (Hand h : hands) {
+    		clone.hands.add(h);
+        }
+
+		clone.mctsTransitions = this.mctsTransitions.clone();
+        clone.trickHearts = this.trickHearts.clone();
+        clone.trickWinners = this.trickWinners.clone();
+        clone.scores = this.scores.clone();
+        
         clone.heartsPlayed = this.heartsPlayed;
     	return clone;
     }

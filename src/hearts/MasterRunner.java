@@ -10,11 +10,6 @@ import fr.avianey.mcts4j.UCT;
   * @author ameliaarcher
   * @author nola gordon
   * 
-  * 
-  * Notes Dec 14:
-  * All players should share the same game
-  * Change heartsrunner to go turn by turn
-  * 
   */
 
 public class MasterRunner {
@@ -33,7 +28,6 @@ public class MasterRunner {
 	
 	public MasterRunner(int player0Type, int player1Type, int player2Type, int player3Type) {
 		
-		
 		game = new Game();
 
 		players = new ArrayList<PlayerInterface>(); 
@@ -44,9 +38,10 @@ public class MasterRunner {
 		players.add(makePlayer(player3Type));
 
 		int playerNum;
-		while (game.getTurn() < 4) {
-			System.out.println("Game turn = " + game.getTurn());
+		while (game.getTurn() < 52) {
 			playerNum = game.getCurrentPlayer();
+			System.out.println("Game turn = " + game.getTurn()+ "\nPlayer " + playerNum + " is choosing a move...");
+
 			Card toPlay = players.get(playerNum).playTurn(game);
 			System.out.println(toPlay);
 			//find card to be played in player's hand, replace chosen card with actual card from hand
@@ -59,6 +54,8 @@ public class MasterRunner {
 			
 			System.out.println("Player " + playerNum + " played " + toPlay.toString());
 		}
+		
+		System.out.println("Game over. Player " + game.lowestScorePlayer());
 	}
 	
 	private PlayerInterface makePlayer(int playerType) {
