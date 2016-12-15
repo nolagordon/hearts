@@ -28,30 +28,28 @@ import fr.avianey.mcts4j.sample.SampleRunner;
  * Run a game between two HeartsIA opponent...
  * 
  * original code @author antoine vianey
- * modified by @author ameliaarcher
+ * modified by @author ameliaarcher and @author nola gordon
  */
 public class HeartsRunner extends SampleRunner<HeartsTransition> {
 
-    public HeartsRunner() {
-    	super(new HeartsIA());
+    public HeartsRunner(Game game) {
+    	super(new HeartsIA(game));
     }
     
-    public static void main(String[] args) {
-        SampleRunner<HeartsTransition> runner = new HeartsRunner();
-        runner.run(System.currentTimeMillis(), 10000);
-    	Game game = ((HeartsIA) runner.getMcts()).getGame();
+    public void printRunInfo() {
+    	Game simulatedGame = ((HeartsIA) this.getMcts()).getGame();
         System.out.println("Final scores:");
-        int[] scores = game.getScores();
+        int[] scores = simulatedGame.getScores();
         for (int s : scores) {
         	System.out.print(s + ", ");
         }
 
-        ArrayList<Card[]> tricks = game.getTricks();
-	ArrayList<int[]> trickScores = game.getTrickScores();
-	ArrayList<int[]> cardPlayers = game.getCardPlayers();
-	int[] winners = game.getWinners();
-
-	System.out.println("");
+        ArrayList<Card[]> tricks = simulatedGame.getTricks();
+		ArrayList<int[]> trickScores = simulatedGame.getTrickScores();
+		ArrayList<int[]> cardPlayers = simulatedGame.getCardPlayers();
+		int[] winners = simulatedGame.getWinners();
+	
+		System.out.println("");
         for (int t = 0; t < tricks.size(); t++) {
 	    System.out.println("Trick " + t + ": ");
 	    System.out.println("Scores: ");
@@ -67,7 +65,15 @@ public class HeartsRunner extends SampleRunner<HeartsTransition> {
 	    }
 	    System.out.println("Player " + winners[t] + " won this trick");
         }
-        System.out.println("Winner: " + game.lowestScorePlayer() );
+        System.out.println("Winner: " + simulatedGame.lowestScorePlayer() );
+
+    }
+    
+    public static void main(String[] args) {
+    	Game game = new Game();
+        HeartsRunner runner = new HeartsRunner(game);
+        runner.run(System.currentTimeMillis(), 10000);
+        runner.printRunInfo();
     }
     
 }

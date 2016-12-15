@@ -30,7 +30,7 @@ import fr.avianey.mcts4j.Transition;
  * An abstract utility class for testing MCTS implementations.
  * 
  * original code @author antoine vianey
- * modified by @author ameliaarcher
+ * modified by @author ameliaarcher and @author nola gordon
  * 
  *
  * @param <T>
