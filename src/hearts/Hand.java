@@ -16,7 +16,7 @@ public class Hand {
 	
 	public void print() {
 		for (int i = 0; i < cards.size(); i++) {
-			System.out.println(i + ". >" + cards.get(i));
+			System.out.println(i + ". " + cards.get(i));
 		}
 	}
 	

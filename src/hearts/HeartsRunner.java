@@ -45,10 +45,10 @@ public class HeartsRunner extends SampleRunner<HeartsTransition> implements Play
         }
 
         ArrayList<Card[]> tricks = simulatedGame.getTricks();
-		ArrayList<int[]> cardPlayers = simulatedGame.getCardPlayers();
-		int[] winners = simulatedGame.getWinners();
-	
-		System.out.println("");
+	ArrayList<int[]> cardPlayers = simulatedGame.getCardPlayers();
+	int[] winners = simulatedGame.getWinners();
+		
+	System.out.println("");
         for (int t = 0; t < tricks.size(); t++) {
 	    System.out.println("Trick " + t + ": ");
 	    System.out.println("Scores: ");
@@ -66,17 +66,26 @@ public class HeartsRunner extends SampleRunner<HeartsTransition> implements Play
     }
     
     public Card playTurn(Game game) {
-	System.out.println("calling playTurn method");
+	//System.out.println("calling playTurn method");
 	
 	Game gameBaby = game.clone();
 	int turn = gameBaby.turn;
-	//gameBaby.printHands();
+	//	gameBaby.printHands();
+	//	System.out.println("current player is " + game.getCurrentPlayer());
+
 
 	HeartsRunner runSearch = new HeartsRunner(gameBaby);
+	//	System.out.println("Checkpt 1");	
 	runSearch.run(System.currentTimeMillis(), 100);
-	System.out.println("Checkpt 1");	
+	//	System.out.println("checkpt 2");
 
-    	return ((HeartsIA)runSearch.getMcts()).getGame().getTricks().get(turn/4)[turn % 4];
+    	Card playedCard = ((HeartsIA)runSearch.getMcts()).getGame().getTricks().get(turn/4)[turn % 4];
+
+	// update the player
+	game.next();
+
+	return playedCard;
+
     }
     
    /* public static void main(String[] args) {

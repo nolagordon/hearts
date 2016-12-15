@@ -144,12 +144,12 @@ public class Game {
 			}
 	    }
 	    
-	    /*if (moves.isEmpty()) {
+	    if (moves.isEmpty()) {
 		System.out.println("size of hand is " + hand.size());
 		System.out.println("Error! Moves empty!");
 		System.exit(0);
 	    }
-*/
+
 	    return moves;
 	}
 	
@@ -290,6 +290,10 @@ public class Game {
 	    System.out.println("xxxxxxxxxxxxxxxx");
 	}
     }
+
+    public void next() {
+	currentPlayer = (currentPlayer + 1) % players; 
+    }
     
     public Game clone() {
     	Game clone = new Game();
@@ -308,10 +312,10 @@ public class Game {
         
     	clone.hands = new ArrayList<Hand>();
         for (Hand h : hands) {
-    		clone.hands.add(h);
+	    clone.hands.add(h.clone());
         }
 
-		clone.mctsTransitions = this.mctsTransitions.clone();
+	clone.mctsTransitions = this.mctsTransitions.clone();
         clone.trickHearts = this.trickHearts.clone();
         clone.trickWinners = this.trickWinners.clone();
         clone.scores = this.scores.clone();

@@ -54,9 +54,9 @@ public class HeartsIA extends UCT<HeartsTransition, DefaultNode<HeartsTransition
 		} else {
 			currentPlayer = game.getCurrentPlayer();
 		}
-		for (Hand hand : game.getHands()) {
-			hand.print();
-		}
+		//		for (Hand hand : game.getHands()) {
+		//	hand.print();
+		//}
 		this.game = game;
     }
     

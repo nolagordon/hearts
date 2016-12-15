@@ -42,8 +42,9 @@ public class MasterRunner {
 			playerNum = game.getCurrentPlayer();
 			System.out.println("Game turn = " + game.getTurn()+ "\nPlayer " + playerNum + " is choosing a move...");
 
+			
 			Card toPlay = players.get(playerNum).playTurn(game);
-			System.out.println(toPlay);
+			//System.out.println(toPlay);
 			//find card to be played in player's hand, replace chosen card with actual card from hand
 			for (Card c : game.getHands().get(playerNum).getList()) {
 				if (Card.cardComparator().compare(c, toPlay) == 0) {
@@ -55,7 +56,7 @@ public class MasterRunner {
 			System.out.println("Player " + playerNum + " played " + toPlay.toString());
 		}
 		
-		System.out.println("Game over. Player " + game.lowestScorePlayer());
+		System.out.println("Game over. Player " + game.lowestScorePlayer() + " won!");
 	}
 	
 	private PlayerInterface makePlayer(int playerType) {
