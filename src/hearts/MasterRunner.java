@@ -38,7 +38,7 @@ public class MasterRunner {
 		players.add(makePlayer(player3Type));
 
 		int playerNum;
-		while (game.getTurn() < 52) {
+		while (game.getTurn() < 8) {
 			playerNum = game.getCurrentPlayer();
 			System.out.println("Game turn = " + game.getTurn()+ "\nPlayer " + playerNum + " is choosing a move...");
 
