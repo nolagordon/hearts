@@ -40,29 +40,36 @@ public class MasterRunner {
 		players.add(makePlayer(player2Type));
 		players.add(makePlayer(player3Type));
 
-		int playerNum;
-		while (game.getTurn() < 52) {
-			playerNum = game.getCurrentPlayer();
-			// System.out.println("Game turn = " + game.getTurn()+ "\nPlayer " +
-			// playerNum + " is choosing a move...");
-			Card toPlay = players.get(playerNum).playTurn(game);
-			game.playCard(new HeartsTransition(toPlay, playerNum));
-			System.out.println("Player " + playerNum + " played " + toPlay.toString());
-			if (game.getHistory(playerNum, (game.getTurn() - 1) / 4) == null) {
-				ArrayList<ArrayList<GameState>> h = game.history;
-				for (int i = 0; i < h.size(); i++) {
-					for (int j = 0; j < 13; j++) {
-						System.out.print("player " + i + ", trick " + j);
-						if (h.get(i).get(j) == null) {
-							System.out.println(": null");
-						} else {
-							System.out.println(": has value");
+		int repeatExperiment = 2;
+		int[] results = new int[MasterRunner.PLAYERS];
+		for (int k = 0; k < repeatExperiment; k++) {
+
+			int playerNum;
+			while (game.getTurn() < 52) {
+				playerNum = game.getCurrentPlayer();
+				// System.out.println("Game turn = " + game.getTurn()+ "\nPlayer
+				// " +
+				// playerNum + " is choosing a move...");
+				Card toPlay = players.get(playerNum).playTurn(game);
+				game.playCard(new HeartsTransition(toPlay, playerNum));
+				System.out.println("Player " + playerNum + " played " + toPlay.toString());
+				if (game.getHistory(playerNum, (game.getTurn() - 1) / 4) == null) {
+					ArrayList<ArrayList<GameState>> h = game.history;
+					for (int i = 0; i < h.size(); i++) {
+						for (int j = 0; j < 13; j++) {
+							System.out.print("player " + i + ", trick " + j);
+							if (h.get(i).get(j) == null) {
+								System.out.println(": null");
+							} else {
+								System.out.println(": has value");
+							}
 						}
 					}
+					System.out.println("Didn't update history for player " + playerNum + " for trick "
+							+ ((game.getTurn() - 1) / 4) + ", turn " + (game.getTurn() - 1));
+					System.exit(0);
 				}
-				System.out.println("Didn't update history for player " + playerNum + " for trick "
-						+ ((game.getTurn() - 1) / 4) + ", turn " + (game.getTurn() - 1));
-				System.exit(0);
+				results[getWinner()]++;
 			}
 		}
 
