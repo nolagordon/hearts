@@ -3,78 +3,60 @@ package hearts;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
-//import java.util.Scanner;
 import java.util.Set;
 
 public class Game {
 
-    // represents AI choosing random cards
-    public final static int RANDOM = 0;
-    // AI always aims to lose the trick
-    public final static int TRICK = 1;
-
+    int currentPlayer;
 	int players;
 	ArrayList<Hand> hands;
 	ArrayList<Card[]> tricks;
+    HeartsTransition[] mctsTransitions;
     ArrayList<int[]> cardPlayers;
-
-    ArrayList<Hand[]> trickHands;
-    ArrayList<int[]> trickScores;
 
     // store the trick winners and number of hearts in each trick
     // to allow easy undoing of moves in the unplayCard method
     int[] trickHearts;
     int[] trickWinners;
 
-    HeartsTransition lastTransition;
+    // HeartsTransition lastTransition;
     int[] scores;
-    int[] strategies;
     int twoOfClubs;
-    //Scanner scanner;
     int turn;
     int leadingSuit;
-    int userNum;
     boolean heartsPlayed;
 	
 	public Game() {
 	    turn = 0;
 		this.players = 4;
-		strategies = new int[4];
 		scores = new int[4];
 
 		tricks = new ArrayList<Card[]>();
 		cardPlayers = new ArrayList<int[]>();
 		trickHearts = new int[13];
 		trickWinners = new int[13];
-		trickHands = new ArrayList<Hand[]>();
-		trickScores = new ArrayList<int[]>();
+	    mctsTransitions = new HeartsTransition[13];
 
 		leadingSuit = Card.CLUBS;
 		for (int i = 0; i < 13; i++) {
 		    tricks.add(new Card[4]);
-		    trickHands.add(new Hand[4]);
 		    cardPlayers.add(new int[4]);
-		    trickScores.add(new int[4]);
 		}
 		deal();
 		
-		//scanner = new Scanner(System.in);
-		// choose a player number to represent he user
-		// TEMPORARILY REMOVE USER INPUT int userNum = 0;
-		userNum = 17;
-
+		currentPlayer = twoOfClubs;
 		// stores whether or not a heart has been played
 		heartsPlayed = false;
 	}
 		
 	// deal 13 cards to each of 4 players
 	private void deal() {
-		// populate deck of cards
+		// populate deck of cards; 
 		Random rand = new Random();
-		ArrayList<Card> deck = new ArrayList<Card>();
-		for (int s = 0; s < 4; s++) {
+		ArrayList<Card> cardPile = new ArrayList<Card>();
+		for (int s = 0; s < players; s++) {
 			for (int v = 2; v <= 14; v++) {
-				deck.add(new Card(s,v));
+				cardPile.add(new Card(s,v));
 			}
 		}
 		// deal cards
@@ -82,13 +64,13 @@ public class Game {
 		for (int player = 0; player < 4; player++) {
 			hands.add(new Hand());
 			for (int i = 0; i < 13; i++) {
-			    int cardIndex = rand.nextInt(deck.size());
-			    Card cardToAdd = deck.remove(cardIndex);
+			    int cardIndex = rand.nextInt(cardPile.size());
+			    Card cardToAdd = cardPile.remove(cardIndex);
 			    
 			    // if a player gets the 2 of clubs, take note
 			    // they will start the first trick of the game
 			    if ((cardToAdd.getSuit() == Card.CLUBS) && (cardToAdd.getVal() == 2)) {
-				twoOfClubs = player;
+			    	twoOfClubs = player;
 			    }
 			    hands.get(player).add(cardToAdd);
 			}
@@ -97,10 +79,6 @@ public class Game {
 		for (Hand h : hands) {
 			h.sort();
 		}
-		// print out initial hands
-		/*for (Hand h : hands) {
-		    h.print();
-		}*/
 	}
 	
 	//return player with lowest score, if tied picks higher player num
@@ -133,44 +111,44 @@ public class Game {
 	}
 	
 	public Set<HeartsTransition> getPossibleMoves(int currentPlayer) {
+	    //System.out.println("\n\n It's player " + currentPlayer + "'s turn, turn # " + turn);
+	    //System.out.println("\n\n HANDS \n\n");
+	    
+	    //printHands();
 	    Hand hand = hands.get(currentPlayer);
 	    Set<HeartsTransition> moves = new HashSet<HeartsTransition>();
 	  
 	    // if leading the trick, may or may not be able to use hearts
 	    // but otherwise can choose any card
 	    if (turn % players == 0) {
-		// if hearts have already been played, we can lead with any card
-		if (heartsPlayed) {
-		    for( Card c: hand.getList() ) {
-			moves.add(new HeartsTransition(c, currentPlayer));
-		    }
-		} else {
-		    // otherwise filter out any hearts from the list of possible moves
-		    for (Card c: hand.getList()) {
-			if (c.getSuit() != Card.HEARTS) {
+			// if hearts have not already been played, we can lead with non-heart card
+	    	// otherwise falls through to adding all possible cards from hand
+			if (!heartsPlayed) {
+			    for (Card c: hand.getList()) {
+			    	if (c.getSuit() != Card.HEARTS) {
+			    		moves.add(new HeartsTransition(c, currentPlayer));
+			    	}
+			    }
+			}
+	    } else { // not leading the trick
+			for (Card c1 : hand.getList()) {
+			    // must play card in leading suit if in hand
+			    if (c1.getSuit() == leadingSuit) {
+			    	moves.add(new HeartsTransition(c1, currentPlayer));
+			    }
+			} 
+	    }
+	    // if hearts have already b
+	    if (moves.isEmpty()) {
+			for (Card c : hand.getList()) {
 			    moves.add(new HeartsTransition(c, currentPlayer));
 			}
-		    }
-		}
-	    } else { // not leading the trick
-		for (Card c1 : hand.getList()) {
-		    // must play card in leading suit if in hand
-		    if (c1.getSuit() == leadingSuit) {
-			moves.add(new HeartsTransition(c1, currentPlayer));
-		    }
-		} 
-		// if we don't have any cards in the leading suit, we can choose any card
-		/*	if (moves.isEmpty()) {
-		    for (Card c2 : hand.getList()) {
-			moves.add(new HeartsTransition(c2, currentPlayer));
-		    }
-		    }*/
 	    }
-
+	    
 	    if (moves.isEmpty()) {
-		for (Card c : hand.getList()) {
-		    moves.add(new HeartsTransition(c, currentPlayer));
-		}
+		System.out.println("size of hand is " + hand.size());
+		System.out.println("Error! Moves empty!");
+		System.exit(0);
 	    }
 
 	    return moves;
@@ -180,17 +158,18 @@ public class Game {
 	public int playCard(HeartsTransition transition) {
 		Card card = transition.getCard();
 		int playerNum = transition.getPlayer();
-		lastTransition = transition;
+		//lastTransition = transition;
+		mctsTransitions[turn/players] = transition;
 		Card[] trick = tricks.get(turn/players);
 		
 		this.hands.get(playerNum).remove(card);
-		//		System.out.println("Removed one card from player " + playerNum);
 		trick[turn % players] = card;
 		cardPlayers.get(turn/players)[turn % players] = playerNum;
 
 		// if this is the first turn of the suit, set the leadingSuit to that card's suit
 		if (turn % players == 0) {
 		    leadingSuit = trick[0].getSuit();
+
 		}
 		
 		//TODO: is there a better place to put this?
@@ -235,32 +214,18 @@ public class Game {
 		    nextPlayer = winner;
 		    scores[winner] += hearts;
 
-		    Hand[] trickHand = trickHands.get(turn/players);		   
-		    int[] trickScore = trickScores.get(turn/players);
-		    for (int j = 0; j < this.players; j++) {
-			trickHand[j] = new Hand();
-			trickScore[j] = scores[j];
-			for (Card c: hands.get(j).getList()) {
-			    trickHand[j].add(c);
-			}
-		    }
-
-		    //System.out.println("Player " + winner + " won the trick and gained " + hearts + " points");
-		    /*
-		    for (int s : scores) {
-		    	System.out.print(s + " ");
-		    }
-		    System.out.println("Points subtracted");*/
 		}
 		turn++;
+		currentPlayer = nextPlayer;
 		return nextPlayer;
 	}
 	
 	// undo playing of card, return player
 	public int unplayCard(Card card, int playerNum) {
 	    //assert we are undoing most recent move
-	    assert card == lastTransition.getCard() && playerNum == lastTransition.getPlayer();
-	    this.hands.get(playerNum).add(card);
+	    //assert card == lastTransition.getCard() && playerNum == lastTransition.getPlayer();
+	    
+		this.hands.get(playerNum).add(card);
 
 	    //TODO: is there a better place to put this?
 	    // if the suit of the card played is hearts, check whether was 1st heart played
@@ -268,27 +233,22 @@ public class Game {
 	    if (card.getSuit() == Card.HEARTS) {
 	    	outerloop:
 	    	for (Card[] trick : tricks) {
-		    for (Card c : trick) {
-			if (c.getSuit() == Card.HEARTS) {
-			    heartsPlayed = true;
-			    break outerloop;
-			}
-		    }
+			    for (Card c : trick) {
+			    	if (c.getSuit() == Card.HEARTS) {
+			    		heartsPlayed = true;
+			    		break outerloop;
+			    	}
+			    }
 	    	}
 	    }
 	    
 	    // if first turn of trick
 	    if (turn % players == 0) {
-		// figure out who won last trick and undo points
-		int hearts = trickHearts[(turn - 1)/players]; //num points won in last trick
-		int winner = trickWinners[(turn - 1)/players];
-	
-		scores[winner] -= hearts;
-		//System.out.println("Undoing a trick: Player " + winner + " was the winner, now subtracting " + hearts + " points");
-		/*		for (int s : scores) {
-		    System.out.print(s + " ");
-		}
-		System.out.println();*/
+			// figure out who won last trick and undo points
+			int hearts = trickHearts[(turn - 1)/players]; //num points won in last trick
+			int winner = trickWinners[(turn - 1)/players];
+		
+			scores[winner] -= hearts;
 	    }
 	    turn--;
 	    return playerNum;
@@ -299,23 +259,74 @@ public class Game {
 	}
 
     public Card getTwoOfClubs() {
-	for (Card c: hands.get(twoOfClubs).getList()) {
-	    if (c.getSuit() == Card.CLUBS && c.getVal() == 2) {
-		return c;
-	    }
-	}
-	return null;
+		for (Card c: hands.get(twoOfClubs).getList()) {
+		    if (c.getSuit() == Card.CLUBS && c.getVal() == 2) {
+		    	return c;
+		    }
+		}
+		return null;
     }
 
     public ArrayList<int[]> getCardPlayers() {
-	return cardPlayers;
-    }
-
-    public ArrayList<int[]> getTrickScores() {
-	return trickScores;
+    	return cardPlayers;
     }
 
     public int[] getWinners() {
-	return trickWinners;
+    	return trickWinners;
     }
+    
+    public HeartsTransition[] getMctsTransitions() {
+    	return mctsTransitions;
+    }
+    
+    public int getCurrentPlayer() {
+    	return currentPlayer;
+    }
+
+    public void printHands() {
+	for (Hand h : hands) {
+	    for (Card c : h.getList()) {
+		System.out.println(c);
+	    }
+	    System.out.println("xxxxxxxxxxxxxxxx");
+	}
+    }
+
+    public void next() {
+		if ((turn+1) % players == 0) {
+		    currentPlayer = trickWinners[(turn - 1)/players];
+		} else {
+		    currentPlayer = (currentPlayer + 1) % players; 
+		}
+    }
+    
+    public Game clone() {
+    	Game clone = new Game();
+    	clone.currentPlayer = this.currentPlayer;
+    	clone.players = this.players;
+        clone.twoOfClubs = this.twoOfClubs;
+        clone.turn = this.turn;
+        clone.leadingSuit = this.leadingSuit;
+
+        clone.cardPlayers = new ArrayList<int[]>();
+        clone.tricks = new ArrayList<Card[]>();
+        for (int i = 0; i < 13; i++) {
+        	clone.tricks.add(this.tricks.get(i).clone());
+    		clone.cardPlayers.add(this.cardPlayers.get(i).clone());
+    	}
+        
+    	clone.hands = new ArrayList<Hand>();
+        for (Hand h : hands) {
+	    clone.hands.add(h.clone());
+        }
+
+	clone.mctsTransitions = this.mctsTransitions.clone();
+        clone.trickHearts = this.trickHearts.clone();
+        clone.trickWinners = this.trickWinners.clone();
+        clone.scores = this.scores.clone();
+        
+        clone.heartsPlayed = this.heartsPlayed;
+    	return clone;
+    }
+    
 }

@@ -28,37 +28,31 @@ import fr.avianey.mcts4j.sample.SampleRunner;
  * Run a game between two HeartsIA opponent...
  * 
  * original code @author antoine vianey
- * modified by @author ameliaarcher
+ * modified by @author ameliaarcher and @author nola gordon
  */
-public class HeartsRunner extends SampleRunner<HeartsTransition> {
+public class HeartsRunner extends SampleRunner<HeartsTransition> implements PlayerInterface {
 
-    public HeartsRunner() {
-    	super(new HeartsIA());
+    public HeartsRunner(Game game) {
+    	super(new HeartsIA(game));
     }
     
-    public static void main(String[] args) {
-        SampleRunner<HeartsTransition> runner = new HeartsRunner();
-        runner.run(System.currentTimeMillis(), 10000);
-    	Game game = ((HeartsIA) runner.getMcts()).getGame();
+    public void printRunInfo() {
+    	Game simulatedGame = ((HeartsIA) this.getMcts()).getGame();
         System.out.println("Final scores:");
-        int[] scores = game.getScores();
+        int[] scores = simulatedGame.getScores();
         for (int s : scores) {
         	System.out.print(s + ", ");
         }
 
-        ArrayList<Card[]> tricks = game.getTricks();
-	ArrayList<int[]> trickScores = game.getTrickScores();
-	ArrayList<int[]> cardPlayers = game.getCardPlayers();
-	int[] winners = game.getWinners();
-
+        ArrayList<Card[]> tricks = simulatedGame.getTricks();
+	ArrayList<int[]> cardPlayers = simulatedGame.getCardPlayers();
+	int[] winners = simulatedGame.getWinners();
+		
 	System.out.println("");
         for (int t = 0; t < tricks.size(); t++) {
 	    System.out.println("Trick " + t + ": ");
 	    System.out.println("Scores: ");
 	    for (int i = 0; i < 4; i++) {
-		if (tricks.get(t)[i] != null) {
-		    System.out.println("Player " + i + " has score " + trickScores.get(t)[i]);
-		}
 	    }
 	    for (int i = 0; i < 4; i++) {
             	if (tricks.get(t)[i] != null) {
@@ -67,7 +61,33 @@ public class HeartsRunner extends SampleRunner<HeartsTransition> {
 	    }
 	    System.out.println("Player " + winners[t] + " won this trick");
         }
-        System.out.println("Winner: " + game.lowestScorePlayer() );
+        System.out.println("Winner: " + simulatedGame.lowestScorePlayer() );
+
     }
+    
+    public Card playTurn(Game game) {
+	Game gameBaby = game.clone();
+	int turn = gameBaby.turn;
+	//gameBaby.printHands();
+
+
+	HeartsRunner runSearch = new HeartsRunner(gameBaby);
+	runSearch.run(System.currentTimeMillis(), 100);
+
+    	Card playedCard = ((HeartsIA)runSearch.getMcts()).getGame().getTricks().get(turn/4)[turn % 4];
+
+	// update the player
+	game.next();
+
+	return playedCard;
+
+    }
+    
+   /* public static void main(String[] args) {
+    	Game game = new Game();
+        HeartsRunner runner = new HeartsRunner(game);
+        runner.run(System.currentTimeMillis(), 10000);
+        runner.printRunInfo();
+    }*/
     
 }

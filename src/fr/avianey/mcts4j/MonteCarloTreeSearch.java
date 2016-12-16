@@ -4,6 +4,8 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
+import hearts.Game;
+
 /**
  * Abstract class implementing the basis of the 
  * <a href="http://en.wikipedia.org/wiki/Monte-Carlo_tree_search">Monte Carlo Tree Search</a> algorithm :
@@ -22,7 +24,8 @@ p * implement all of the abstract methods of this class (and respect the contrac
  * @param <T> a {@link Transition} representing an atomic action that modifies the state 
  * @param <N> a {@link Node} that stores simulations and wins
  * 
- * @author antoine vianey
+ * Original @author antoine vianey
+ * Modified by @author ameliaarcher and @author nola gordon
  */
 // TODO describe pass, skip actions
 public abstract class MonteCarloTreeSearch<T extends Transition, N extends Node<T>> {
@@ -31,7 +34,7 @@ public abstract class MonteCarloTreeSearch<T extends Transition, N extends Node<
      * This is where we are.
      * Each {@link Node} keeps a reference to its parent {@link Node} and to each child {@link Node}.
      */
-    private Path<T, N> pathToRoot;
+    protected Path<T, N> pathToRoot;
     
     public MonteCarloTreeSearch() {
     	reset();
@@ -90,7 +93,7 @@ public abstract class MonteCarloTreeSearch<T extends Transition, N extends Node<
     
     /**
      * Truncate the tree, keeping only the current root {@link Node} and its sub-tree.
-     * Sub-trees that does not contains the current root {@link Node} are removes as well.
+     * Sub-trees that do not contains the current root {@link Node} are removed as well.
      */
     public void simplifyTree() {
     	this.pathToRoot = new Path<T, N>(pathToRoot.endNode());
@@ -100,7 +103,7 @@ public abstract class MonteCarloTreeSearch<T extends Transition, N extends Node<
     /**
      * Update the context and change the root of the tree to this context so that it reflects the
      * realization of the given {@link Transition}. This method is the same as {@link #makeTransition(Transition)}
-     * but it also change the root of the tree to the {@link Node} reached by the given {@link Transition}.
+     * but it also changes the root of the tree to the {@link Node} reached by the given {@link Transition}.
      * MUST only be called with a {@link Transition} returned by {@link #getBestTransition()}.
      * @param transition
      * @see #makeTransition(Transition)

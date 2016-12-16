@@ -7,6 +7,8 @@ import java.util.Set;
 
 import fr.avianey.mcts4j.DefaultNode;
 import fr.avianey.mcts4j.Node;
+import fr.avianey.mcts4j.Path;
+import fr.avianey.mcts4j.Transition;
 import fr.avianey.mcts4j.UCT;
 
 import hearts.Game;
@@ -35,7 +37,7 @@ import hearts.Game;
  * Simple Hearts IA to showcase the API. 
  * 
  * original code @author antoine vianey
- * modified by @author ameliaarcher
+ * modified by @author ameliaarcher and @author nola gordon
  */
 public class HeartsIA extends UCT<HeartsTransition, DefaultNode<HeartsTransition>> {
         
@@ -44,15 +46,20 @@ public class HeartsIA extends UCT<HeartsTransition, DefaultNode<HeartsTransition
     private int currentPlayer;
     private int nextPlayer;
     
-    public HeartsIA() {
+    public HeartsIA(Game game) {
     	super();
-        game = new Game();
-		currentPlayer = game.hasTwoOfClubs();
-		for (Hand hand : game.getHands()) {
-			hand.print();
+		if (game.getTurn() == 0) {
+			currentPlayer = game.hasTwoOfClubs();
+			
+		} else {
+			currentPlayer = game.getCurrentPlayer();
 		}
-	}
-
+		//		for (Hand hand : game.getHands()) {
+		//	hand.print();
+		//}
+		this.game = game;
+    }
+    
     @Override
     public boolean isOver() {
         return game.getTurn() >= 52;

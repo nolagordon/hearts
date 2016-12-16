@@ -26,7 +26,7 @@ import fr.avianey.mcts4j.Transition;
  * A basic move implementation : who and where...
  * 
  * original code @author antoine vianey
- * modified by @author ameliaarcher
+ * modified by @author ameliaarcher and @author nola gordon
  */
 public class HeartsTransition implements Transition {
 
