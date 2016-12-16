@@ -55,8 +55,21 @@ public class Game {
 			history.get(j).add(null);
 		    }
 		}
+		
+	
 
 		deal();
+
+		// set up history of initial state for each player
+		for (int i = 0; i < 4; i++) {
+		    history.get(i).set(0, new GameState(scores,
+							scores[i],
+							hands,
+							hands.get(i),
+							false,
+							false,
+							false));
+		}
 		
 		currentPlayer = twoOfClubs;
 		// stores whether or not a heart has been played
@@ -211,6 +224,7 @@ public class Game {
 	
 	// play card, return next player
 	public int playCard(HeartsTransition transition) {
+
 		Card card = transition.getCard();
 		int playerNum = transition.getPlayer();
 		//lastTransition = transition;
@@ -279,6 +293,10 @@ public class Game {
 					    turn == 51, 
 					    false, 
 					    false);
+		if (state == null) {
+		    System.out.println(" state null for player " + currentPlayer + ", trick " + ((turn -1)/players));
+		    System.exit(0);
+		}
 		ArrayList<GameState> playerHist = history.get(currentPlayer);
 		playerHist.set(((turn-1) / players), state);
 

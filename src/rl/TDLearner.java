@@ -44,7 +44,7 @@ public class TDLearner implements PlayerInterface {
 	for (int i = hist.size() - 1; i > 0; i--) {	    
 	    GameState s = hist.get(i);
 	    if (s == null) {
-		System.out.println("error: history contains null state");
+		System.out.println("error: history contains null state at index " + i);
 		System.exit(0);
 	    }
 	    double actualVal = 0;

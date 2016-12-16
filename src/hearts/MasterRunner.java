@@ -43,20 +43,13 @@ public class MasterRunner {
 		while (game.getTurn() < 52) {
 			playerNum = game.getCurrentPlayer();
 			//System.out.println("Game turn = " + game.getTurn()+ "\nPlayer " + playerNum + " is choosing a move...");
-
-			
 			Card toPlay = players.get(playerNum).playTurn(game);
-			//System.out.println(toPlay);
-
-			//find card to be played in player's hand, replace chosen card with actual card from hand
-			/*	for (Card c : game.getHands().get(playerNum).getList()) {
-			    if (c.getSuit() == toPlay.getSuit() && c.getVal() == toPlay.getVal()) {
-				toPlay = c;
-			    }
-			    }*/
 			game.playCard(new HeartsTransition(toPlay, playerNum));
-			
 			System.out.println("Player " + playerNum + " played " + toPlay.toString());
+			if (game.getHistory( playerNum, (game.getTurn() - 2)/4) == null) { 
+			    System.out.println("Didn't update history for player " + playerNum + " for trick " + ((game.getTurn() - 2)/4)); 
+			    System.exit(0);
+			}
 		}
 		
 		System.out.println("Game over. Player " + game.lowestScorePlayer() + " won!");
