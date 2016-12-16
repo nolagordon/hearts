@@ -19,6 +19,11 @@ public class Perceptron {
     public Perceptron(int numInputs, double learningFactor) {
 	lf = learningFactor;
 	weights = new double[numInputs];
+
+	// initialize all weights to be 0.5
+	for (int i = 0; i < weights.length; i++) {
+	    weights[i] = 0.5;
+	}
     }
 
     // given an array of input values that represent information about

@@ -87,7 +87,7 @@ public class MasterRunner {
 			    // note: for now we are doing 7 features
 			    player = new TDLearner(7, false, false);
 			    // simulate 100 games to train our perceptron on
-			    for (int i = 0; i < 10; i++) {
+			    for (int i = 0; i < 0; i++) {
 				new MasterRunner(0,0,0,0,player);
 			    }
 				break;

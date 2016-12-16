@@ -71,6 +71,7 @@ public class TDLearner implements PlayerInterface {
 	// compile an array list of game states from the map
 	ArrayList<GameState> states = new ArrayList<GameState>();
 	for (GameState state: moves.keySet()) {
+	    System.out.println("added to states list");
 	    states.add(state);
 	}
 	int bestMove = selectAction(states);

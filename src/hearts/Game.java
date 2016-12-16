@@ -152,7 +152,7 @@ public class Game {
 			if (c.getSuit() != Card.HEARTS) {
 			    Game clone = this.clone();
 			    clone.playCard(new HeartsTransition(c, currentPlayer));
-			    states.put(clone.getHistory(currentPlayer, (turn - 1) % players), c);
+			    states.put(clone.getHistory(currentPlayer, turn % players), c);
 			}
 		    }
 		}
@@ -162,7 +162,7 @@ public class Game {
 		    if (c1.getSuit() == leadingSuit) {
 			Game clone = this.clone();
 			clone.playCard(new HeartsTransition(c1, currentPlayer));
-			states.put(clone.getHistory(currentPlayer, (turn - 1) % players), c1);
+			states.put(clone.getHistory(currentPlayer, turn % players), c1);
 		    }
 		} 
 	    }
@@ -171,9 +171,15 @@ public class Game {
 		for (Card c : hand.getList()) {
 		    Game clone = this.clone();
 		    clone.playCard(new HeartsTransition(c, currentPlayer));
-		    states.put(clone.getHistory(currentPlayer, (turn - 1) % players), c);
+		    states.put(clone.getHistory(currentPlayer, turn % players), c);
 		}
 	    }
+
+	    if (states.isEmpty()) {
+		System.out.println("error: states empty, no possible transitions available");
+		System.exit(0);
+	    }
+	    System.out.println("there are " + states.size() + " moves to choose from");
 	    return states;
 	
     }
