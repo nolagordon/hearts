@@ -43,7 +43,8 @@ public class Game {
 		    cardPlayers.add(new int[4]);
 		}
 		deal();
-
+		
+		currentPlayer = twoOfClubs;
 		// stores whether or not a heart has been played
 		heartsPlayed = false;
 	}
@@ -162,7 +163,6 @@ public class Game {
 		Card[] trick = tricks.get(turn/players);
 		
 		this.hands.get(playerNum).remove(card);
-		//		System.out.println("Removed one card from player " + playerNum);
 		trick[turn % players] = card;
 		cardPlayers.get(turn/players)[turn % players] = playerNum;
 

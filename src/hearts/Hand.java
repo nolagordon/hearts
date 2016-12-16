@@ -25,9 +25,22 @@ public class Hand {
 	}
 	
 	public Card remove(Card c) {
-		cards.remove(c);
-		return c;
-	}
+	    //System.out.println("card to remove is " + c);
+	    //System.out.println("card list is " + cards);
+	    Card toRemove = null;
+	    for (Card card: cards) {
+		if (card.getSuit() == c.getSuit() && card.getVal() == c.getVal()) {
+		    toRemove = card;
+		}
+	    }
+
+	    if (toRemove == null) {
+		System.out.println("Error: removing null from card list");
+		System.exit(0);
+	    } 
+	    cards.remove(toRemove);
+	    return toRemove;
+	}   
 	
 	public Card get(int index) {
 		return cards.get(index);
@@ -59,7 +72,7 @@ public class Hand {
 		}
 		return inSuit;
 	}
-    
+
     public Hand clone() {
 	Hand clone = new Hand();
 	for (Card c : cards) {
