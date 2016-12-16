@@ -67,7 +67,7 @@ public class TDLearner implements PlayerInterface {
     public Card playTurn(Game game) {
 	// get all possible actions, then evaluate them with selectAction
 	Map<GameState, Card> moves = game.getPossibleStates(game.getCurrentPlayer());
-
+	
 	// compile an array list of game states from the map
 	ArrayList<GameState> states = new ArrayList<GameState>();
 	for (GameState state: moves.keySet()) {
@@ -89,6 +89,7 @@ public class TDLearner implements PlayerInterface {
     // use a greedy selection policy with some exploration to select the next move
     public int selectAction(ArrayList<GameState> states) {
 	int selectedAction = 0;
+	if (states.size() == 1) { return 0; }
 	double selectedActionVal = learner.classify(states.get(0).getFeatureArr());
 	boolean allSame = true;
 	
