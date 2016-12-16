@@ -18,13 +18,13 @@ import rl.GameState;
 public class MasterRunner {
 
 	// list strategies
-	public final int UCT = 0;
-	public final int RAND = 1;
-	public final int TRICK = 2;
-	public final int TDLEARN = 3;
-	public final int HUMAN = 4;
+	public static final int UCT = 0;
+	public static final int RAND = 1;
+	public static final int TRICK = 2;
+	public static final int TDLEARN = 3;
+	public static final int HUMAN = 4;
 
-	public final int PLAYERS = 4;
+	public static final int PLAYERS = 4;
 
 	Game game;
 	ArrayList<PlayerInterface> players;
@@ -40,29 +40,36 @@ public class MasterRunner {
 		players.add(makePlayer(player2Type));
 		players.add(makePlayer(player3Type));
 
-		int playerNum;
-		while (game.getTurn() < 52) {
-			playerNum = game.getCurrentPlayer();
-			// System.out.println("Game turn = " + game.getTurn()+ "\nPlayer " +
-			// playerNum + " is choosing a move...");
-			Card toPlay = players.get(playerNum).playTurn(game);
-			game.playCard(new HeartsTransition(toPlay, playerNum));
-			System.out.println("Player " + playerNum + " played " + toPlay.toString());
-			if (game.getHistory(playerNum, (game.getTurn() - 1) / 4) == null) {
-				ArrayList<ArrayList<GameState>> h = game.history;
-				for (int i = 0; i < h.size(); i++) {
-					for (int j = 0; j < 13; j++) {
-						System.out.print("player " + i + ", trick " + j);
-						if (h.get(i).get(j) == null) {
-							System.out.println(": null");
-						} else {
-							System.out.println(": has value");
+		int repeatExperiment = 2;
+		int[] results = new int[MasterRunner.PLAYERS];
+		for (int k = 0; k < repeatExperiment; k++) {
+
+			int playerNum;
+			while (game.getTurn() < 52) {
+				playerNum = game.getCurrentPlayer();
+				// System.out.println("Game turn = " + game.getTurn()+ "\nPlayer
+				// " +
+				// playerNum + " is choosing a move...");
+				Card toPlay = players.get(playerNum).playTurn(game);
+				game.playCard(new HeartsTransition(toPlay, playerNum));
+				System.out.println("Player " + playerNum + " played " + toPlay.toString());
+				if (game.getHistory(playerNum, (game.getTurn() - 1) / 4) == null) {
+					ArrayList<ArrayList<GameState>> h = game.history;
+					for (int i = 0; i < h.size(); i++) {
+						for (int j = 0; j < 13; j++) {
+							System.out.print("player " + i + ", trick " + j);
+							if (h.get(i).get(j) == null) {
+								System.out.println(": null");
+							} else {
+								System.out.println(": has value");
+							}
 						}
 					}
+					System.out.println("Didn't update history for player " + playerNum + " for trick "
+							+ ((game.getTurn() - 1) / 4) + ", turn " + (game.getTurn() - 1));
+					System.exit(0);
 				}
-				System.out.println("Didn't update history for player " + playerNum + " for trick "
-						+ ((game.getTurn() - 1) / 4) + ", turn " + (game.getTurn() - 1));
-				System.exit(0);
+				results[getWinner()]++;
 			}
 		}
 
@@ -101,13 +108,20 @@ public class MasterRunner {
 		return player;
 	}
 
+	public int getWinner() {
+		return game.lowestScorePlayer();
+	}
+
 	public static void main(String[] args) {
-		int repeatExperiment = 10;
-		int[] results = new int[repeatExperiment];
+		int repeatExperiment = 2;
+		int[] results = new int[MasterRunner.PLAYERS];
 		MasterRunner master;
 		for (int i = 0; i < repeatExperiment; i++) {
-			 master = new MasterRunner(3, 0, 0, 0, null);
-			
+			master = new MasterRunner(3, 0, 0, 0, null);
+			results[master.getWinner()]++;
+		}
+		for (int j = 0; j < MasterRunner.PLAYERS; j++) {
+			System.out.println("Player " + j + " won " + results[j] + " games.");
 		}
 	}
 
