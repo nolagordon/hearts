@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
+import java.util.Map;
+import java.util.HashMap;
+import rl.GameState;
 
 public class Game {
 
@@ -13,6 +16,9 @@ public class Game {
 	ArrayList<Card[]> tricks;
     HeartsTransition[] mctsTransitions;
     ArrayList<int[]> cardPlayers;
+
+    // record the history of game states for each player
+    ArrayList<ArrayList<GameState>> history;
 
     // store the trick winners and number of hearts in each trick
     // to allow easy undoing of moves in the unplayCard method
@@ -31,17 +37,25 @@ public class Game {
 		this.players = 4;
 		scores = new int[4];
 
+		history = new ArrayList<ArrayList<GameState>>();
+		for (int i = 0; i < players; i++) {
+		    history.add(new ArrayList<GameState>());
+		}
 		tricks = new ArrayList<Card[]>();
 		cardPlayers = new ArrayList<int[]>();
 		trickHearts = new int[13];
 		trickWinners = new int[13];
-	    mctsTransitions = new HeartsTransition[13];
+		mctsTransitions = new HeartsTransition[13];
 
 		leadingSuit = Card.CLUBS;
 		for (int i = 0; i < 13; i++) {
 		    tricks.add(new Card[4]);
 		    cardPlayers.add(new int[4]);
+		    for (int j = 0; j < players; j++) {
+			history.get(j).add(null);
+		    }
 		}
+
 		deal();
 		
 		currentPlayer = twoOfClubs;
@@ -109,6 +123,47 @@ public class Game {
 	public int[] getScores() {
 		return scores;
 	}
+
+    // for td learning: returns a list of possible states the game can transition to
+    public Map<GameState, Card> getPossibleStates(int currentPlayer) {
+	    Hand hand = hands.get(currentPlayer);
+	    Map<GameState, Card> states = new HashMap<GameState, Card>();
+	  
+	    // if leading the trick, may or may not be able to use hearts
+	    // but otherwise can choose any card
+	    if (turn % players == 0) {
+		// if hearts have not already been played, we can lead with non-heart card
+	    	// otherwise falls through to adding all possible cards from hand
+		if (!heartsPlayed) {
+		    for (Card c: hand.getList()) {
+			if (c.getSuit() != Card.HEARTS) {
+			    Game clone = this.clone();
+			    clone.playCard(new HeartsTransition(c, currentPlayer));
+			    states.put(clone.getHistory(currentPlayer, (turn - 1) % players), c);
+			}
+		    }
+		}
+	    } else { // not leading the trick
+		for (Card c1 : hand.getList()) {
+		    // must play card in leading suit if in hand
+		    if (c1.getSuit() == leadingSuit) {
+			Game clone = this.clone();
+			clone.playCard(new HeartsTransition(c1, currentPlayer));
+			states.put(clone.getHistory(currentPlayer, (turn - 1) % players), c1);
+		    }
+		} 
+	    }
+	    // if hearts have already been played
+	    if (states.isEmpty()) {
+		for (Card c : hand.getList()) {
+		    Game clone = this.clone();
+		    clone.playCard(new HeartsTransition(c, currentPlayer));
+		    states.put(clone.getHistory(currentPlayer, (turn - 1) % players), c);
+		}
+	    }
+	    return states;
+	
+    }
 	
 	public Set<HeartsTransition> getPossibleMoves(int currentPlayer) {
 	    //System.out.println("\n\n It's player " + currentPlayer + "'s turn, turn # " + turn);
@@ -216,6 +271,17 @@ public class Game {
 
 		}
 		turn++;
+		// update the history
+		GameState state = new GameState(scores, 
+					    scores[currentPlayer], 
+					    hands, 
+					    hands.get(currentPlayer), 
+					    turn == 51, 
+					    false, 
+					    false);
+		ArrayList<GameState> playerHist = history.get(currentPlayer);
+		playerHist.set(((turn-1) / players), state);
+
 		currentPlayer = nextPlayer;
 		return nextPlayer;
 	}
@@ -257,6 +323,14 @@ public class Game {
 	public int hasTwoOfClubs() {
 	    return twoOfClubs;
 	}
+
+    public ArrayList<GameState> getHistory(int playerNum) {
+	return history.get(playerNum);
+    }
+
+    public GameState getHistory(int playerNum, int trickNum) {
+	return history.get(playerNum).get(trickNum);
+    }
 
     public Card getTwoOfClubs() {
 		for (Card c: hands.get(twoOfClubs).getList()) {

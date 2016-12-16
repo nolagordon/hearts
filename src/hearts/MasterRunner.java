@@ -12,6 +12,8 @@ import fr.avianey.mcts4j.UCT;
   * 
   */
 
+import rl.TDLearner;
+
 public class MasterRunner {
 	
 	// list strategies
@@ -26,7 +28,7 @@ public class MasterRunner {
 	Game game;
 	ArrayList<PlayerInterface> players;
 	
-	public MasterRunner(int player0Type, int player1Type, int player2Type, int player3Type) {
+    public MasterRunner(int player0Type, int player1Type, int player2Type, int player3Type, PlayerInterface tdlearner) {
 		
 		game = new Game();
 
@@ -58,6 +60,13 @@ public class MasterRunner {
 		}
 		
 		System.out.println("Game over. Player " + game.lowestScorePlayer() + " won!");
+
+		// determine whether we are in a simulation
+		if (tdlearner != null) {
+		    for (int i = 0; i < 4; i++) {
+			((TDLearner) tdlearner).train(game.getHistory(i));
+		    }
+		}
 	}
 	
 	private PlayerInterface makePlayer(int playerType) {
@@ -70,15 +79,21 @@ public class MasterRunner {
 			case TRICK:
 				break;
 			case TDLEARN:
+			    // note: for now we are doing 7 features
+			    player = new TDLearner(7, false, false);
+			    // simulate 100 games to train our perceptron on
+			    for (int i = 0; i < 100; i++) {
+				new MasterRunner(0,0,0,0,player);
+			    }
 				break;
 			case HUMAN:
 				break;
 		}
 		return player;
 	}
-	
+    
 	public static void main(String[] args) {
-		MasterRunner master = new MasterRunner(0, 0, 0, 0);
+	    MasterRunner master = new MasterRunner(3, 0, 0, 0, null);
 	}
 	
 }

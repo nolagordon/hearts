@@ -99,7 +99,7 @@ public class GameState {
 	if (or) {
 	    for (int i = 0; i < NUM_FEATURES; i++) {
 		for (int j = 0; j < NUM_FEATURES; j++) {
-		    result[curFeature++] = result[i] | result[j];
+		    result[curFeature++] = (int) result[i] | (int) result[j];
 		}
 	    }
 	}
@@ -107,7 +107,7 @@ public class GameState {
 	if (and) {
 	    for (int i = 0; i < NUM_FEATURES; i++) {
 		for (int j = 0; j < NUM_FEATURES; j++) {
-		    result[curFeature++] = result[i] & result[j];
+		    result[curFeature++] = (int) result[i] & (int) result[j];
 		}
 	    }
 	}
