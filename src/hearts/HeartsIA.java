@@ -34,79 +34,79 @@ import hearts.Game;
  */
 
 /**
- * Simple Hearts IA to showcase the API. 
+ * Simple Hearts IA to showcase the API.
  * 
- * original code @author antoine vianey
- * modified by @author ameliaarcher and @author nola gordon
+ * original code @author antoine vianey modified by @author ameliaarcher
+ * and @author nola gordon
  */
 public class HeartsIA extends UCT<HeartsTransition, DefaultNode<HeartsTransition>> {
-        
-    private Game game;
-    
-    private int currentPlayer;
-    private int nextPlayer;
-    
-    public HeartsIA(Game game) {
-    	super();
+
+	private Game game;
+
+	private int currentPlayer;
+	private int nextPlayer;
+
+	public HeartsIA(Game game) {
+		super();
 		if (game.getTurn() == 0) {
 			currentPlayer = game.hasTwoOfClubs();
-			
+
 		} else {
 			currentPlayer = game.getCurrentPlayer();
 		}
-		//		for (Hand hand : game.getHands()) {
-		//	hand.print();
-		//}
+		// for (Hand hand : game.getHands()) {
+		// hand.print();
+		// }
 		this.game = game;
-    }
-    
-    @Override
-    public boolean isOver() {
-        return game.getTurn() >= 52;
-    }
+	}
 
-    @Override
-    public void makeTransition(HeartsTransition transition) {
-    	nextPlayer = game.playCard(transition);
-        next();
-    }
+	@Override
+	public boolean isOver() {
+		return game.getTurn() >= 52;
+	}
 
-    @Override
-    public void unmakeTransition(HeartsTransition transition) {
-    	nextPlayer = game.unplayCard(transition.getCard(), transition.getPlayer());
-        previous();
-    }
+	@Override
+	public void makeTransition(HeartsTransition transition) {
+		nextPlayer = game.playCard(transition);
+		next();
+	}
 
-    @Override
-    public Set<HeartsTransition> getPossibleTransitions() {
-    	Set<HeartsTransition> moves = new HashSet<HeartsTransition>();
-    	// if it's the first move of the game, must be 2 of clubs
-    	if (game.getTurn() == 0) {
-	    moves.add(new HeartsTransition(game.getTwoOfClubs(), currentPlayer));
-    	} else {
-    		moves = game.getPossibleMoves(currentPlayer);
-    	}
-        return moves;
-    }
+	@Override
+	public void unmakeTransition(HeartsTransition transition) {
+		nextPlayer = game.unplayCard(transition.getCard(), transition.getPlayer());
+		previous();
+	}
 
-    @Override
-    public void next() {
-        currentPlayer = nextPlayer;
-    }
+	@Override
+	public Set<HeartsTransition> getPossibleTransitions() {
+		Set<HeartsTransition> moves = new HashSet<HeartsTransition>();
+		// if it's the first move of the game, must be 2 of clubs
+		if (game.getTurn() == 0) {
+			moves.add(new HeartsTransition(game.getTwoOfClubs(), currentPlayer));
+		} else {
+			moves = game.getPossibleMoves(currentPlayer);
+		}
+		return moves;
+	}
 
-    @Override
-    public void previous() {
-        currentPlayer = nextPlayer;
-    }
-    
-    public String toString() {    	
-        StringBuilder sb = new StringBuilder();
-        return sb.toString();
-    }
+	@Override
+	public void next() {
+		currentPlayer = nextPlayer;
+	}
+
+	@Override
+	public void previous() {
+		currentPlayer = nextPlayer;
+	}
+
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		return sb.toString();
+	}
 
 	@Override
 	public HeartsTransition simulationTransition(Set<HeartsTransition> possibleTransitions) {
-	 	List<HeartsTransition> transitions = new ArrayList<HeartsTransition>(possibleTransitions);
+		List<HeartsTransition> transitions = new ArrayList<HeartsTransition>(possibleTransitions);
 		return transitions.get((int) Math.floor(Math.random() * possibleTransitions.size()));
 	}
 
@@ -125,7 +125,7 @@ public class HeartsIA extends UCT<HeartsTransition, DefaultNode<HeartsTransition
 	public int getCurrentPlayer() {
 		return currentPlayer;
 	}
-	
+
 	public Game getGame() {
 		return game;
 	}
@@ -134,5 +134,5 @@ public class HeartsIA extends UCT<HeartsTransition, DefaultNode<HeartsTransition
 	public DefaultNode<HeartsTransition> newNode(Node<HeartsTransition> parent, boolean terminal) {
 		return new DefaultNode<HeartsTransition>(parent, terminal);
 	}
-	
+
 }
