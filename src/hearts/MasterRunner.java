@@ -13,6 +13,7 @@ import fr.avianey.mcts4j.UCT;
   */
 
 import rl.TDLearner;
+import rl.GameState;
 
 public class MasterRunner {
 	
@@ -46,8 +47,19 @@ public class MasterRunner {
 			Card toPlay = players.get(playerNum).playTurn(game);
 			game.playCard(new HeartsTransition(toPlay, playerNum));
 			System.out.println("Player " + playerNum + " played " + toPlay.toString());
-			if (game.getHistory( playerNum, (game.getTurn() - 2)/4) == null) { 
-			    System.out.println("Didn't update history for player " + playerNum + " for trick " + ((game.getTurn() - 2)/4)); 
+			if (game.getHistory( playerNum, (game.getTurn() - 1)/4) == null) { 
+			    ArrayList<ArrayList<GameState>> h = game.history;
+			    for (int i = 0; i < h.size(); i++ ) {
+				for (int j = 0; j < 13; j++) {
+				    System.out.print("player " + i + ", trick " + j);
+				    if (h.get(i).get(j) == null) {
+					System.out.println(": null");
+				    } else {
+					System.out.println(": has value");
+				    }
+				}
+			    }
+			    System.out.println("Didn't update history for player " + playerNum + " for trick " + ((game.getTurn() - 1)/4) + ", turn " + (game.getTurn() - 1)); 
 			    System.exit(0);
 			}
 		}
@@ -75,7 +87,7 @@ public class MasterRunner {
 			    // note: for now we are doing 7 features
 			    player = new TDLearner(7, false, false);
 			    // simulate 100 games to train our perceptron on
-			    for (int i = 0; i < 100; i++) {
+			    for (int i = 0; i < 10; i++) {
 				new MasterRunner(0,0,0,0,player);
 			    }
 				break;

@@ -18,7 +18,7 @@ public class Game {
     ArrayList<int[]> cardPlayers;
 
     // record the history of game states for each player
-    ArrayList<ArrayList<GameState>> history;
+    public ArrayList<ArrayList<GameState>> history;
 
     // store the trick winners and number of hearts in each trick
     // to allow easy undoing of moves in the unplayCard method
@@ -284,22 +284,24 @@ public class Game {
 		    scores[winner] += hearts;
 
 		}
-		turn++;
+		
 		// update the history
 		GameState state = new GameState(scores, 
-					    scores[currentPlayer], 
+					    scores[playerNum], 
 					    hands, 
-					    hands.get(currentPlayer), 
+					    hands.get(playerNum), 
 					    turn == 51, 
 					    false, 
 					    false);
 		if (state == null) {
-		    System.out.println(" state null for player " + currentPlayer + ", trick " + ((turn -1)/players));
+		    System.out.println(" state null for player " + playerNum + ", trick " + (turn/players));
 		    System.exit(0);
 		}
-		ArrayList<GameState> playerHist = history.get(currentPlayer);
-		playerHist.set(((turn-1) / players), state);
+		ArrayList<GameState> playerHist = history.get(playerNum);
+		playerHist.set((turn / players), state);
 
+		turn++;
+	
 		currentPlayer = nextPlayer;
 		return nextPlayer;
 	}
