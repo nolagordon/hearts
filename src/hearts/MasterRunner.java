@@ -31,7 +31,6 @@ public class MasterRunner {
 
 	public MasterRunner(int player0Type, int player1Type, int player2Type, int player3Type, PlayerInterface tdlearner) {
 
-		game = new Game();
 
 		players = new ArrayList<PlayerInterface>();
 
@@ -46,6 +45,7 @@ public class MasterRunner {
 
 			int playerNum;
 			while (game.getTurn() < 52) {
+				game = new Game();
 				playerNum = game.getCurrentPlayer();
 				// System.out.println("Game turn = " + game.getTurn()+ "\nPlayer
 				// " +
@@ -113,16 +113,8 @@ public class MasterRunner {
 	}
 
 	public static void main(String[] args) {
-		int repeatExperiment = 2;
-		int[] results = new int[MasterRunner.PLAYERS];
-		MasterRunner master;
-		for (int i = 0; i < repeatExperiment; i++) {
-			master = new MasterRunner(3, 0, 0, 0, null);
-			results[master.getWinner()]++;
-		}
-		for (int j = 0; j < MasterRunner.PLAYERS; j++) {
-			System.out.println("Player " + j + " won " + results[j] + " games.");
-		}
+		MasterRunner master = new MasterRunner(3, 0, 0, 0, null);
+	
 	}
 
 }
