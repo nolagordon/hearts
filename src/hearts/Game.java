@@ -216,6 +216,7 @@ public class Game {
 
 		}
 		turn++;
+		currentPlayer = nextPlayer;
 		return nextPlayer;
 	}
 	
@@ -292,11 +293,11 @@ public class Game {
     }
 
     public void next() {
-	if ((turn+1) % players == 0) {
-	    currentPlayer = trickWinners[(turn - 1)/players];
-	} else {
-	    currentPlayer = (currentPlayer + 1) % players; 
-	}
+		if ((turn+1) % players == 0) {
+		    currentPlayer = trickWinners[(turn - 1)/players];
+		} else {
+		    currentPlayer = (currentPlayer + 1) % players; 
+		}
     }
     
     public Game clone() {
