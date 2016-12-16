@@ -19,7 +19,7 @@ public class TDLearner implements PlayerInterface {
 
 	// stores the perceptron
 	Perceptron learner;
-	// the learning factor (i think, gonna have this represent lambda???)
+	// the learning factor
 	public static final double LF = 0.75;
 
 	double decay = 0.5;
@@ -55,14 +55,15 @@ public class TDLearner implements PlayerInterface {
 			} else {
 				// idk whether this is correct...
 				actualVal = ((1 - decay) * s.getScore()) + (decay * stateVals[i - 1]);
-				System.out.println("Statevals i-1 " + stateVals[i -1]);
+				//				System.out.println("Statevals i-1 " + stateVals[i -1]);
 			}
 
 			// compare the expected value of the state calculated by the learner
 			// and compare it to the actual value
 			// compute error and update the perceptron weights
 			double expectedVal = learner.classify(s.getFeatureArr());
-			learner.update(s.getFeatureArr(), Math.abs(expectedVal - actualVal));
+			System.out.println("expectd val: " + expectedVal + ", actualVal: " + actualVal);
+			learner.update(s.getFeatureArr(), actualVal - expectedVal);
 			stateVals[i] = actualVal;
 		}
 	}

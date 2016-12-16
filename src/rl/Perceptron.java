@@ -35,7 +35,7 @@ public class Perceptron {
 		for (int i = 0; i < weights.length; i++) {
 			result += input[i] * weights[i];
 		}
-		return result / weights.length;
+		return (1 / (1 + Math.exp(result)));// / (double) weights.length;
 	}
 
 	// updates the weight vector given the input features and the
@@ -43,6 +43,12 @@ public class Perceptron {
 	public void update(double[] input, double error) {
 		for (int i = 0; i < weights.length; i++) {
 			weights[i] = weights[i] + (lf) * error * input[i];
+			if (Double.isNaN(weights[i])) {
+			    System.out.println("lf: " + lf);
+			    System.out.println("error: " + error);
+			    System.out.println("input[i]: " + input[i]);
+			    System.exit(0);
+			}
 		}
 	}
 
