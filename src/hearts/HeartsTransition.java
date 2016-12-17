@@ -25,53 +25,52 @@ import fr.avianey.mcts4j.Transition;
 /**
  * A basic move implementation : who and where...
  * 
- * original code @author antoine vianey
- * modified by @author ameliaarcher and @author nola gordon
+ * original code @author antoine vianey modified by @author ameliaarcher
+ * and @author nola gordon
  */
 public class HeartsTransition implements Transition {
 
-    /** The player owning the move */
-    private int player;
-    
-    /** Card to play */
-    private Card card;
-    
+	/** The player owning the move */
+	private int player;
+
+	/** Card to play */
+	private Card card;
+
 	public HeartsTransition(Card card, int player) {
-        this.card = card;
-        this.player = player;
-    }
-    
-    public Card getCard() {
-        return card;
-    }
-    
-    public void setCard(Card card) {
-        this.card = card;
-    }
+		this.card = card;
+		this.player = player;
+	}
 
-    public int getPlayer() {
-        return player;
-    }
+	public Card getCard() {
+		return card;
+	}
 
-    public void setPlayer(int player) {
-        this.player = player;
-    }
-    
-    // TODO: is this a good hashcode?
-    @Override
-    public int hashCode() {
-    	return (player >> 6) | (card.getSuit() >> 3) | card.getVal();
-    }
+	public void setCard(Card card) {
+		this.card = card;
+	}
 
-    @Override
-    public boolean equals(Object o) {
-    	return o instanceof HeartsTransition &&
-    			((HeartsTransition) o).player == player &&
-    			((HeartsTransition) o).card == card;
-    }
-    
-    public String toString() {
-    	return "HeartsTransition";
-    }
-    
+	public int getPlayer() {
+		return player;
+	}
+
+	public void setPlayer(int player) {
+		this.player = player;
+	}
+
+	// TODO: is this a good hashcode?
+	@Override
+	public int hashCode() {
+		return (player >> 6) | (card.getSuit() >> 3) | card.getVal();
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		return o instanceof HeartsTransition && ((HeartsTransition) o).player == player
+				&& ((HeartsTransition) o).card == card;
+	}
+
+	public String toString() {
+		return "HeartsTransition";
+	}
+
 }

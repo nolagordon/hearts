@@ -29,58 +29,60 @@ import fr.avianey.mcts4j.Transition;
 /**
  * An abstract utility class for testing MCTS implementations.
  * 
- * original code @author antoine vianey
- * modified by @author ameliaarcher and @author nola gordon
+ * original code @author antoine vianey modified by @author ameliaarcher
+ * and @author nola gordon
  * 
  *
  * @param <T>
  */
 public abstract class SampleRunner<T extends Transition> {
-    
-    public static interface Listener<T extends Transition> {
-        public void onMove(MonteCarloTreeSearch<T, ? extends Node<T>> mcts, T transition, int turn);
-        public void onGameOver(MonteCarloTreeSearch<T, ? extends Node<T>> mcts);
-        public void onNoPossibleMove(MonteCarloTreeSearch<T, ? extends Node<T>> mcts);
-    }
 
-    protected MonteCarloTreeSearch<T, ? extends Node<T>> mcts;
-    private Listener<T> listener;
+	public static interface Listener<T extends Transition> {
+		public void onMove(MonteCarloTreeSearch<T, ? extends Node<T>> mcts, T transition, int turn);
 
-    public SampleRunner(MonteCarloTreeSearch<T, ? extends Node<T>> mcts) {
-        this.mcts = mcts;
-    }
-    
-    public void setListener(Listener<T> listener) {
-        this.listener = listener;
-    }
-    
-    public MonteCarloTreeSearch<T, ? extends Node<T>> getMcts() {
-    	return mcts;
-    }
-    
-    public void run(long startTime, long timeCap) {
-        T transition;
-        int turn = 0;
-        while (!mcts.isOver()) {
-            Set<T> transitions = mcts.getPossibleTransitions();
-            if (!transitions.isEmpty()) {
-                transition = mcts.getBestTransition(startTime, timeCap);
-                mcts.doTransition(transition);
-                if (listener != null) {
-                    listener.onMove(mcts, transition, ++turn);
-                }
-            } else {
-                if (listener != null) {
-                    listener.onNoPossibleMove(mcts);
-                }
-                // no move for the current player
-                // up to next player
-                mcts.next();
-            }
-        }
-        if (listener != null) {
-            listener.onGameOver(mcts);
-        }
-    }
-    
+		public void onGameOver(MonteCarloTreeSearch<T, ? extends Node<T>> mcts);
+
+		public void onNoPossibleMove(MonteCarloTreeSearch<T, ? extends Node<T>> mcts);
+	}
+
+	protected MonteCarloTreeSearch<T, ? extends Node<T>> mcts;
+	private Listener<T> listener;
+
+	public SampleRunner(MonteCarloTreeSearch<T, ? extends Node<T>> mcts) {
+		this.mcts = mcts;
+	}
+
+	public void setListener(Listener<T> listener) {
+		this.listener = listener;
+	}
+
+	public MonteCarloTreeSearch<T, ? extends Node<T>> getMcts() {
+		return mcts;
+	}
+
+	public void run(long startTime, long timeCap) {
+		T transition;
+		int turn = 0;
+		while (!mcts.isOver()) {
+			Set<T> transitions = mcts.getPossibleTransitions();
+			if (!transitions.isEmpty()) {
+				transition = mcts.getBestTransition(startTime, timeCap);
+				mcts.doTransition(transition);
+				if (listener != null) {
+					listener.onMove(mcts, transition, ++turn);
+				}
+			} else {
+				if (listener != null) {
+					listener.onNoPossibleMove(mcts);
+				}
+				// no move for the current player
+				// up to next player
+				mcts.next();
+			}
+		}
+		if (listener != null) {
+			listener.onGameOver(mcts);
+		}
+	}
+
 }
