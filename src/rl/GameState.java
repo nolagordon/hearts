@@ -52,13 +52,13 @@ public class GameState {
 	return terminal;
     }
 
+    // returns an array of doubles that represents the features of this game state
     public double[] getFeatureArr() {
 	int totalFeatures = NUM_FEATURES;
 	if (or) { totalFeatures += NUM_FEATURES * NUM_FEATURES; }
 	if (and) { totalFeatures += NUM_FEATURES * NUM_FEATURES; }
 
 	double[] result = new double[totalFeatures];
-	// for now just deal with whether we are short cards
 	// first four features say whether the player is short different suits
 	for (int i = 0; i < 4; i++) {
 	    result[i] = 1;
@@ -80,7 +80,7 @@ public class GameState {
 		result[3] = 0;
 	    }
 	}
-	// use this to make indexing easier (hopefully)
+	// store curFeature to use as an index for results
 	int curFeature = 4;
 	
 	// the next 3 features record details about the score

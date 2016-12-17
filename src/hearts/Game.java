@@ -11,14 +11,14 @@ import rl.GameState;
 public class Game {
 
     int currentPlayer;
-	int players;
-	ArrayList<Hand> hands;
-	ArrayList<Card[]> tricks;
+    int players;
+    ArrayList<Hand> hands;
+    ArrayList<Card[]> tricks;
     HeartsTransition[] mctsTransitions;
     ArrayList<int[]> cardPlayers;
 
     // record the history of game states for each player
-    public ArrayList<ArrayList<GameState>> history;
+    ArrayList<ArrayList<GameState>> history;
 
     // store the trick winners and number of hearts in each trick
     // to allow easy undoing of moves in the unplayCard method
@@ -174,7 +174,8 @@ public class Game {
 		    states.put(clone.getHistory(currentPlayer, turn % players), c);
 		}
 	    }
-
+	    
+	    // debugging
 	    if (states.isEmpty()) {
 		System.out.println("error: states empty, no possible transitions available");
 		System.exit(0);
@@ -183,11 +184,9 @@ public class Game {
 	    return states;
 	
     }
-	
+
+    // for MCTS analysis - returns a set of transitions that the current player can make
 	public Set<HeartsTransition> getPossibleMoves(int currentPlayer) {
-	    //System.out.println("\n\n It's player " + currentPlayer + "'s turn, turn # " + turn);
-	    //System.out.println("\n\n HANDS \n\n");
-	    
 	    //printHands();
 	    Hand hand = hands.get(currentPlayer);
 	    Set<HeartsTransition> moves = new HashSet<HeartsTransition>();
@@ -319,7 +318,6 @@ public class Game {
 	    
 		this.hands.get(playerNum).add(card);
 
-	    //TODO: is there a better place to put this?
 	    // if the suit of the card played is hearts, check whether was 1st heart played
 	    heartsPlayed = false;	    
 	    if (card.getSuit() == Card.HEARTS) {
@@ -399,7 +397,8 @@ public class Game {
 		    currentPlayer = (currentPlayer + 1) % players; 
 		}
     }
-    
+
+    // returns a copy of this game
     public Game clone() {
     	Game clone = new Game();
     	clone.currentPlayer = this.currentPlayer;

@@ -28,14 +28,14 @@ public class Perceptron {
 
 	// given an array of input values that represent information about
 	// the current state, return a double that corresponds to the value
-	// of that state
+	// of that state, computed with the sigmoid function
 	public double classify(double[] input) {
 		// linear regression
 		double result = 0;
 		for (int i = 0; i < weights.length; i++) {
 			result += input[i] * weights[i];
 		}
-		return (1 / (1 + Math.exp(result)));// / (double) weights.length;
+		return (1 / (1 + Math.exp(result)));
 	}
 
 	// updates the weight vector given the input features and the
@@ -43,12 +43,6 @@ public class Perceptron {
 	public void update(double[] input, double error) {
 		for (int i = 0; i < weights.length; i++) {
 			weights[i] = weights[i] + (lf) * error * input[i];
-			if (Double.isNaN(weights[i])) {
-			    System.out.println("lf: " + lf);
-			    System.out.println("error: " + error);
-			    System.out.println("input[i]: " + input[i]);
-			    System.exit(0);
-			}
 		}
 	}
 

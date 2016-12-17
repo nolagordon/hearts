@@ -14,6 +14,7 @@ import hearts.Card;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class TDLearner implements PlayerInterface {
 
@@ -103,18 +104,19 @@ public class TDLearner implements PlayerInterface {
 	// use a greedy selection policy with some exploration to select the next
 	// move
 	public int selectAction(ArrayList<GameState> states) {
+       	        Random rand = new Random();
 		int selectedAction = 0;
 		if (states.size() == 1) {
 			return 0;
 		}
+		if (rand.nextInt(100) == 0) {
+		    return rand.nextInt(states.size());
+		}
 		double selectedActionVal = learner.classify(states.get(0).getFeatureArr());
 		boolean allSame = true;
 
-		// for all actions, run them thru the perceptron to calculate their
-		// expected value
-		// go for the action with the least value (bc hearts is won by winning
-		// as few
-		// pts as possible)
+		// for all actions, run them thru the perceptron to calculate their expected value
+		// go with action with the least value (bc hearts is won by winning as few pts as possible)
 		for (int i = 1; i < states.size(); i++) {
 			GameState curState = states.get(i);
 			double curVal = learner.classify(curState.getFeatureArr());
@@ -130,10 +132,9 @@ public class TDLearner implements PlayerInterface {
 		}
 
 		// if the value of all states are equal, choose a random action
-		// TODO: actually implement this
-		// if (allSame) {
-		// selectedAction;
-		// }
+		if (allSame) {
+		    selectedAction = rand.nextInt(states.size());
+		}
 
 		return selectedAction;
 
